@@ -258,20 +258,20 @@ export default function HomePage() {
         {!showVideo && !isVideoFinished && (
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-               🦁
+              Tricampeão? 🦁
             </h2>
             {/* <p className="text-lg text-muted-foreground mb-2 max-w-xl mx-auto">
               Vamos ver...
             </p> */}
-            {/* Mostrar a contagem de visualizações */}
-            <div className="mb-8 flex items-center justify-center text-lg text-primary">
-              <Eye size={24} className="mr-2" />
-              {isLoadingCount ? 'A carregar visualizações...' : `${viewCount.toLocaleString('pt-PT')} visualizações`}
-            </div>
             <Button onClick={handlePlayVideo} size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Play size={20} className="mr-2" />
               Vamos ver...
             </Button>
+            {/* Mostrar a contagem de visualizações */}
+            {/* <div className="mt-8 flex items-center justify-center text-lg text-primary">
+              <Eye size={24} className="mr-2" />
+              {isLoadingCount ? 'A carregar visualizações...' : `${viewCount.toLocaleString('pt-PT')} visualizações`}
+            </div> */}
           </div>
         )}
 
