@@ -1,0 +1,72 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+@keyframes drop {
+  0% {
+    transform: translateY(-20px) scale(0.8);
+    opacity: 0;
+  }
+  30% { /* Aparece e começa a cair */
+    transform: translateY(-15px) scale(1);
+    opacity: 1;
+  }
+  100% { /* Chega ao "frasco" e desaparece */
+    transform: translateY(10px) scale(0.5); /* Ajuste o translateY para "cair" no ícone do olho */
+    opacity: 0;
+  }
+}
+
+.animate-drop {
+  animation: drop 0.7s ease-out forwards;
+}
+
+/* Opcional: Animação para o número quando atualiza */
+@keyframes pulse-number {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); color: #a3e635; } /* Cor de destaque (ex: lime-400) */
+  100% { transform: scale(1); }
+}
+
+.number-pulse {
+  animation: pulse-number 0.4s ease-in-out;
+}

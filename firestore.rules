@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read the campaign summary
+    match /campaign/summary {
+      allow read: if true;
+      // Allow authenticated users to update the summary
+      allow update: if request.auth != null;
+    }
+
+    // Allow anyone to read Hall of Fame entries
+    match /hallOfFameEntries/{hofEntryId} {
+      allow read: if true;
+      // Allow authenticated users to create Hall of Fame entries (when enrolling in contest)
+      // More restrictive rules for update/delete might be needed later
+      allow create: if request.auth != null;
+    }
+
+    // Allow authenticated users to create donation documents
+    match /donations/{donationId} {
+      // You might want to restrict read access later, but for now allow anyone to read
+      allow read: if true;
+      allow create: if request.auth != null;
+    }
+  }
+}
