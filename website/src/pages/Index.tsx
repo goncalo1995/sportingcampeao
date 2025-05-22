@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw, X, Eye } from 'lucide-react'; // Ícone Eye adicionado
+import { Play, RotateCcw, X, Eye, Share2, Clock, Users } from 'lucide-react'; // Ícone Eye adicionado
 import { supabase } from '@/lib/supabaseClient'; // Importar o cliente Supabase
 import AdThankYouSection from '@/components/AdThankYouSection'
 import Header from '@/components/Header';
@@ -114,6 +114,24 @@ const SimpleHeader = () => (
 
 const SimpleFooter = () => (
   <footer className="p-4 text-center text-sm text-muted-foreground">
+    <div className="bg-gray-50 p-4 mb-2">
+        <div className="flex items-center justify-center text-sm text-gray-600">
+          <Users className="w-4 h-4 mr-2" />
+          <span>34 sportinguistas já contribuíram</span>
+        </div>
+        <div className="text-center mt-2">
+          <div className="flex justify-center -space-x-2">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="w-8 h-8 bg-green-100 rounded-full border-2 border-white flex items-center justify-center text-xs">
+                🦁
+              </div>
+            ))}
+          </div>
+          {/* <p className="text-xs text-gray-500 mt-2">
+            "Força Sporting! Todos juntos por este sonho!" - João M.
+          </p> */}
+        </div>
+      </div>
     <p>© {new Date().getFullYear()} Sporting Campeão. Todos os direitos reservados.</p>
     <a href="/politica-de-privacidade" className="hover:underline">Política de Privacidade</a>
   </footer>
@@ -148,12 +166,19 @@ export default function HomePage() {
   const [showVideo, setShowVideo] = useState(false);
   const [isVideoFinished, setIsVideoFinished] = useState(false);
   const [viewCount, setViewCount] = useState(0); // Estado para a contagem de visualizações
+  const [likeCount, setLikeCount] = useState(0);
+  const [userHasLiked, setUserHasLiked] = useState(false);
   const [isLoadingCount, setIsLoadingCount] = useState(true);
   const videoContainerRef = useRef(null);
   const videoRef = useRef(null);
   const hasIncrementedViewThisSession = useRef(false);
   const [adContent, setAdContent] = useState(null); // ou useState(<p>Anúncio Simulado!</p>);
   const [simulatedHourlyData, setSimulatedHourlyData] = useState([]);
+
+  const remainingDays = 85;
+  const totalGoal = 2950;
+  const currentAmount = 47; // Simulado
+  const percentage = Math.round((currentAmount / totalGoal) * 100);
 
   useEffect(() => {
     // Simular dados horários para demonstração
@@ -173,19 +198,19 @@ export default function HomePage() {
 
   // Função para buscar a contagem inicial e configurar o real-time
   useEffect(() => {
-    const fetchAndSubscribeToViewCount = async () => {
+    const fetchAndSubscribeToCounts = async () => {
       setIsLoadingCount(true);
       // Buscar contagem inicial
-      const { data, error } = await supabase
+      const { data: viewData, error: viewError } = await supabase
         .from('video_views')
         .select('view_count')
         .eq('video_identifier', VIDEO_IDENTIFIER)
         .single(); // Usamos single() porque esperamos apenas um registo por video_identifier
 
-      if (error && error.code !== 'PGRST116') { // PGRST116: "The result contains 0 rows"
-        console.error('Erro ao buscar contagem inicial:', error);
-      } else if (data) {
-        setViewCount(data.view_count);
+      if (viewError && viewError.code !== 'PGRST116') { // PGRST116: "The result contains 0 rows"
+        console.error('Erro ao buscar contagem inicial:', viewError);
+      } else if (viewData) {
+        setViewCount(viewData.view_count);
       } else {
         // Se não houver registo, pode querer criar um com 0 visualizações
         // Por agora, vamos assumir que começa em 0 se não existir
@@ -198,10 +223,24 @@ export default function HomePage() {
         if (insertError) console.error("Erro ao criar registo inicial:", insertError);
         */
       }
+
+      // --- 2. Fetch initial like count ---
+      const { data: likeData, error: likeError, count: initialLikeCount } = await supabase
+        .from('video_likes')
+        .select('*', { count: 'exact', head: true }) // Use count 'exact' for total
+        .eq('video_identifier', VIDEO_IDENTIFIER);
+
+      if (likeError) {
+        console.error('Erro ao buscar contagem inicial de likes:', likeError);
+        setLikeCount(0);
+      } else {
+        setLikeCount(initialLikeCount || 0);
+      }
+      setUserHasLiked(false)
       setIsLoadingCount(false);
 
       // Configurar subscrição real-time
-      const channel = supabase
+      const viewChannel = supabase
         .channel(`realtime-video-views-${VIDEO_IDENTIFIER}`)
         .on(
           'postgres_changes',
@@ -226,13 +265,59 @@ export default function HomePage() {
           }
         });
 
+        // For likes, we need to listen to INSERT and DELETE events on video_likes
+      // and then re-fetch the total count, as individual events don't give the new total directly.
+      const likeChannel = supabase
+      .channel(`realtime-video-likes-${VIDEO_IDENTIFIER}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT and DELETE
+          schema: 'public',
+          table: 'video_likes',
+          filter: `video_identifier=eq.${VIDEO_IDENTIFIER}`, // Only for this video
+        },
+        async (payload) => {
+          console.log('Like event received:', payload);
+          // Re-fetch the total like count
+          const { count: newLikeCount, error: refetchError } = await supabase
+            .from('video_likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('video_identifier', VIDEO_IDENTIFIER);
+
+          if (refetchError) {
+            console.error('Erro ao re-buscar contagem de likes após evento:', refetchError);
+          } else {
+            setLikeCount(newLikeCount || 0);
+          }
+
+          // Check if the event affects the current user's like status
+          // if (currentUserId) {
+          //     if (payload.eventType === 'INSERT' && payload.new.user_id === currentUserId) {
+          //         setUserHasLiked(true);
+          //     } else if (payload.eventType === 'DELETE' && payload.old.user_id === currentUserId) {
+          //         setUserHasLiked(false);
+          //     }
+          // }
+        }
+      )
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`Subscrito ao canal de likes para ${VIDEO_IDENTIFIER}!`);
+        }
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error(`Erro na subscrição Supabase (likes - ${status}):`, err);
+        }
+      });
+
       // Cleanup da subscrição quando o componente é desmontado
       return () => {
-        supabase.removeChannel(channel);
+        supabase.removeChannel(viewChannel);
+        supabase.removeChannel(likeChannel);
       };
     };
 
-    fetchAndSubscribeToViewCount();
+    fetchAndSubscribeToCounts();
   }, []); // Executa apenas uma vez
 
   const incrementViewCountViaFunction = async () => {
@@ -365,7 +450,25 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-background p-4">
       <Header />
+      <div className="p-6 bg-gray-50 w-96">
+        <div className="flex items-center mb-3">
+          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
+            <span className="text-2xl">🦁</span>
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-800">A Minha História</h3>
+            <p className="text-sm text-gray-600">Sportinguista de coração</p>
+          </div>
+        </div>
+        <p className="text-gray-700 text-sm leading-relaxed">
+          Sou sportinguista desde pequeno, socio desde 2003, e já tive o previlegio de acumular 10 anos de gamebox graças ao meu tio Luís e estou a ver se consigo angaria fundos para 10 de lugar de Leão junto do meu tio João. 
+          {/* Um lugar de sócio custa <strong>€2.950 por 10 anos</strong>, mas sozinho não consigo.  */}
+          {/* <span className="text-green-600 font-medium">Com a vossa ajuda,</span>, 
+          longe da magia do estádio que tanto amo. */}
+        </p>
+      </div>
 
+      
       {/* <ViewCounterJar viewCount={viewCount} isLoading={isLoadingCount} /> */}
 
       <main className="flex-grow flex flex-col items-center justify-center w-full">
@@ -420,8 +523,6 @@ export default function HomePage() {
               controls
               onEnded={handleVideoEnded}
               className="w-full h-full"
-              playsInline
-              
             >
               O seu navegador não suporta o elemento de vídeo.
             </video>
@@ -431,15 +532,15 @@ export default function HomePage() {
         {isVideoFinished ?
         <>
            <AdThankYouSection
-            views={viewCount}
-            onShare={handleShare}
-            onWatchAgain={handleWatchAgain} // Passar a função correta
-            onClose={handleCloseAdSection}
-            onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
-            adSlotContent={adContent} // Passar o conteúdo do anúncio
-            revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
-            sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
-          />
+              views={viewCount}
+              onShare={handleShare}
+              onWatchAgain={handleWatchAgain} // Passar a função correta
+              onClose={handleCloseAdSection}
+              onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
+              adSlotContent={adContent} // Passar o conteúdo do anúncio
+              revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
+              sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
+              onLike={undefined} onRepost={undefined}          />
           {/* <HelpInteraction /> */}
 
         </>

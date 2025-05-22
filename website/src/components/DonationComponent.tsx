@@ -109,7 +109,30 @@ const DonationComponent = ({
                     <h3 className="text-xl font-semibold text-sporting border-b-2 border-slate-200 pb-3 mb-4">
                     Contribui para o lugar de Leão ao pé do tio João!
                     </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div className="space-y-3 mb-4">
+                        {options.map((option) => (
+                            <button
+                            key={option.amount}
+                            onClick={() => handleOptionClick(option)}
+                            className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                                totalAmount === option.amount
+                                ? 'border-green-500 bg-green-50'
+                                : 'border-gray-200 hover:border-green-300'
+                            }`}
+                            >
+                            <div className="flex justify-between items-center">
+                                <div>
+                                <div className="font-semibold text-green-600">€{option.amount}</div>
+                                <div className="text-sm text-gray-600">{option.display_label}</div>
+                                </div>
+                                <div className="text-xs text-gray-500 text-right">
+                                {option.impact}
+                                </div>
+                            </div>
+                            </button>
+                        ))}
+                        </div>
+                    {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                         {options.map(option => (
                             <button
                                 key={option.id}
@@ -120,7 +143,7 @@ const DonationComponent = ({
                                 {option.display_label}
                             </button>
                         ))}
-                    </div>
+                    </div> */}
                     {activeDescription.text && (
                         <div className="p-4 rounded-lg text-left w-full max-w-lg border-2 border-sporting mt-4 lg:mt-0">
                             <h4 className="text-lg font-semibold text-green-700 mb-1">
@@ -153,9 +176,9 @@ const DonationComponent = ({
                                     </span>
                                 </div>
                                 <div onClick={() => handleDonate(true)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                <Button asChild variant="ghost" className="w-full sm:w-auto text-primary-foreground px-4">
-                                    <ShoppingBag size={18} className="mr-2 text-sporting group-hover:text-amber-500 transition-colors" />
-                                </Button>
+                                    <Button asChild variant="ghost" className="w-full sm:w-auto text-primary-foreground px-4">
+                                        <ShoppingBag size={18} className="mr-2 text-sporting group-hover:text-amber-500 transition-colors" />
+                                    </Button>
                                 </div>
                                 <div onClick={() => setIsFronttshirt(!isFrontTshirt)} className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
