@@ -8,43 +8,43 @@ import clsx from 'clsx';
 const mockInteractionOptions = [
     {
         id: 'uuid1',
-        option_name: 'coffee',
+        option_name: 'Café',
         option_type: 'support_small',
         option_redirect_url: null,
         display_label: '☕',
         display_order: 1,
         value: 1,
-        description: 'A warm virtual coffee to keep the creator fueled! Every sip helps.',
+        description: 'Desde já obrigado. SL',
     },
     {
         id: 'uuid2',
+        option_name: 'És grande',
+        option_type: 'support_xl',
+        option_redirect_url: null,
+        display_label: '📱',
+        display_order: 2,
+        value: 3,
+        description: 'Já encomendei um',
+    },
+    {
+        id: 'uuid3',
         option_name: 'beer',
         option_type: 'support_medium',
         option_redirect_url: null,
         display_label: '🍺',
-        display_order: 2,
-        value: 3,
-        description: "Cheers! A round of virtual beers for a job well done. Let's celebrate!",
-    },
-    {
-        id: 'uuid3',
-        option_name: 'third',
-        option_type: 'support_xl',
-        option_redirect_url: null,
-        display_label: '📱',
         display_order: 3,
         value: 5,
-        description: 'Bem preciso de um novo protetor de ecrã!',
+        description: "Um brinde à cerveja e à tua doação! Se me vires no Jamor vem brindar à vida e ao Sporting 🍻",
     },
     {
-        id: 'uuid3',
-        option_name: 'full_meal',
+        id: 'uuid4',
+        option_name: 'doação_de_leão',
         option_type: 'support_xl',
         option_redirect_url: null,
         display_label: '🦁',
         display_order: 4,
         value: 9,
-        description: 'Mais perto do lugar de leão!',
+        description: 'Cada vez mais perto de asseguram o lugar de leão!',
     }
 ];
 
@@ -64,8 +64,10 @@ const DonationComponent = ({
     }, []);
 
     const handleOptionClick = (option) => {
-        setTotalAmount(prevAmount => prevAmount + option.value);
+        setTotalAmount(prevAmount => option.value === 1 ? prevAmount + option.value : option.value);
+        
         if (option.description) {
+            // show for different for each
             setActiveDescription({ title: option.option_name, text: option.description });
         }
     };
@@ -107,7 +109,7 @@ const DonationComponent = ({
                     <h3 className="text-xl font-semibold text-sporting border-b-2 border-slate-200 pb-3 mb-4">
                     Contribui para o lugar de Leão ao pé do tio João!
                     </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                         {options.map(option => (
                             <button
                                 key={option.id}
@@ -120,7 +122,7 @@ const DonationComponent = ({
                         ))}
                     </div>
                     {activeDescription.text && (
-                        <div className="bg-slate-200 p-4 rounded-lg text-left w-full max-w-sm shadow-inner border-l-4 border-sporting mt-4 lg:mt-0">
+                        <div className="p-4 rounded-lg text-left w-full max-w-lg border-2 border-sporting mt-4 lg:mt-0">
                             <h4 className="text-lg font-semibold text-green-700 mb-1">
                                 {formatTitle(activeDescription.title)}!
                             </h4>
@@ -129,12 +131,7 @@ const DonationComponent = ({
                             </p>
                         </div>
                     )}
-                    <Button asChild variant="outline" className="mt-4 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
-                        <a href={`https://revolut.me/${revolutUsername}/${totalAmount}EUR/💚🤍❤️`} target="_blank" rel="noopener noreferrer">
-                            <Gift size={18} className="transition-colors" />
-                            Revolut do Leão
-                        </a>
-                        </Button>
+                    
                 </div>
 
                 {/* Display Panel */}
@@ -160,7 +157,7 @@ const DonationComponent = ({
                                     <ShoppingBag size={18} className="mr-2 text-sporting group-hover:text-amber-500 transition-colors" />
                                 </Button>
                                 </div> */}
-                                <div onClick={() => setIsFronttshirt(!isFrontTshirt)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => setIsFronttshirt(!isFrontTshirt)} className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button
                                             className={clsx(
@@ -178,7 +175,7 @@ const DonationComponent = ({
                                         </button>
                                     </div>
                                 </div>
-                                <div onClick={() => {setTotalAmount(0); setActiveDescription({title: '', text: ''})}} className="absolute top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => {setTotalAmount(0); setActiveDescription({title: '', text: ''})}} className="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button
                                             className={clsx(
@@ -198,7 +195,7 @@ const DonationComponent = ({
                                 </div>
                                 </>
                             ) : totalAmount > 0 &&
-                                <div onClick={() => setIsFronttshirt(!isFrontTshirt)} className="absolute top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => setIsFronttshirt(!isFrontTshirt)} className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button
                                             className={clsx(
@@ -207,7 +204,7 @@ const DonationComponent = ({
                                         >
                                             <div className="relative before:absolute before:-inset-2.5 before:rounded-full before:transition-[background-color] before:group-hover:bg-sporting/30">
                                                 <Repeat
-                                                    color='white'
+                                                    color='green'
                                                     absoluteStrokeWidth
                                                     className={'~size-4/5 group-active:spring-duration-[25] spring-bounce-[65] spring-duration-300 transition-transform group-active:scale-[80%]'
                                                     }
@@ -235,6 +232,13 @@ const DonationComponent = ({
                 </div>
                 )}
             </div>
+
+            {/* <Button asChild variant="outline" className="mt-4 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
+                        <a href={`https://revolut.me/${revolutUsername}/${totalAmount}EUR/💚🤍❤️`} target="_blank" rel="noopener noreferrer">
+                            <Gift size={18} className="transition-colors" />
+                            Revolut do Leão
+                        </a>
+                        </Button> */}
 
             {/* Action Buttons */}
             {/* <div className="mt-6 flex justify-center items-center gap-4 flex-wrap">

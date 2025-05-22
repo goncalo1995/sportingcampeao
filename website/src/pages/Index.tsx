@@ -146,7 +146,7 @@ const OLDAdThankYouSection = ({ onWatchAgain, onClose }) => {
 
 export default function HomePage() {
   const [showVideo, setShowVideo] = useState(false);
-  const [isVideoFinished, setIsVideoFinished] = useState(true);
+  const [isVideoFinished, setIsVideoFinished] = useState(false);
   const [viewCount, setViewCount] = useState(0); // Estado para a contagem de visualizações
   const [isLoadingCount, setIsLoadingCount] = useState(true);
   const videoContainerRef = useRef(null);
@@ -379,15 +379,15 @@ export default function HomePage() {
             </p> */}
 
                   {/* Placar Sempre Visível no Topo */}
-            <div className="mt-24">
+            {/* <div className="mt-24">
               <AnimatedScorePlacard viewCount={viewCount} isLoading={isLoadingCount} minDisplayDigits={5} />
-            </div>
+            </div> */}
 
-              <DonationComponent />
+              {/* <DonationComponent /> */}
 
             <Button onClick={handlePlayVideo} size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Play size={20} className="mr-2" />
-              Vamos ver...
+              Vamos ver
             </Button>
             {/* Mostrar a contagem de visualizações */}
             {/* <div className="mt-8 flex items-center justify-center text-lg text-primary">

@@ -56,6 +56,19 @@ const AdThankYouSection = ({
 
       {!adSlotContent ? <DonationComponent /> : null }
 
+      <div className="flex flex-row gap-8 sm:gap-4 justify-center mt-6">
+        <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto px-4">
+          <RotateCcw size={18} className="mr-2" />
+          Bisualizar
+        </Button>
+        <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
+          <a href={revolutLink} target="_blank" rel="noopener noreferrer">
+            <Gift size={18} className="mr-2 transition-colors" />
+            Revolut do Leão
+          </a>
+        </Button>
+      </div>
+
       <Activity
         likes={likes}
         reposts={0}
@@ -101,20 +114,6 @@ const AdThankYouSection = ({
             Este pequeno anúncio ajuda a manter o sonho vivo! Obrigado pelo teu tempo.
          </p>
       )}
-
-
-      <div className="flex flex-row gap-8 sm:gap-4 justify-center mt-6">
-        <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto px-4">
-          <RotateCcw size={18} className="mr-2" />
-          Bisualizar
-        </Button>
-        {/* <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
-          <a href={revolutLink} target="_blank" rel="noopener noreferrer">
-            <Gift size={18} className="mr-2 text-amber-600 group-hover:text-amber-500 transition-colors" />
-            Would you help?
-          </a>
-        </Button> */}
-      </div>
     </div>
   );
 };
