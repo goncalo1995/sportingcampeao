@@ -152,11 +152,11 @@ const DonationComponent = ({
                                         {totalAmount}
                                     </span>
                                 </div>
-                                {/* <div onClick={() => handleDonate(true)} className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => handleDonate(true)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                 <Button asChild variant="ghost" className="w-full sm:w-auto text-primary-foreground px-4">
                                     <ShoppingBag size={18} className="mr-2 text-sporting group-hover:text-amber-500 transition-colors" />
                                 </Button>
-                                </div> */}
+                                </div>
                                 <div onClick={() => setIsFronttshirt(!isFrontTshirt)} className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button

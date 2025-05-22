@@ -16,7 +16,7 @@ const AdThankYouSection = ({
   onIncrementViewCount, // Função para chamar o incremento
   adSlotContent, // O conteúdo JSX do seu bloco de anúncio (ou null se não houver)
   revolutLink = "https://revolut.me/sportingcampeao", // Placeholder
-  paypalLink = "https://www.paypal.com/qrcodes/p2pqrc/9AHJMRJZVYQG2",
+  paypalLink = "https://paypal.me/glcrp",
   sportingTshirtLink = "https://lojaverde.sporting.pt/", // Placeholder
 }) => {
   const hasIncremented = useRef(false);
@@ -57,7 +57,7 @@ const AdThankYouSection = ({
 
       {!adSlotContent ? <DonationComponent /> : null }
 
-      <div className="flex flex-row gap-8 sm:gap-4 justify-center mt-6">
+      <div className="flex flex-col sm:flex-row gap-5 justify-center mt-6">
         <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto px-4">
           <RotateCcw size={18} className="mr-2" />
           Bisualizar
