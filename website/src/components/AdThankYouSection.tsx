@@ -16,6 +16,7 @@ const AdThankYouSection = ({
   onIncrementViewCount, // Função para chamar o incremento
   adSlotContent, // O conteúdo JSX do seu bloco de anúncio (ou null se não houver)
   revolutLink = "https://revolut.me/sportingcampeao", // Placeholder
+  paypalLink = "https://www.paypal.com/qrcodes/p2pqrc/9AHJMRJZVYQG2",
   sportingTshirtLink = "https://lojaverde.sporting.pt/", // Placeholder
 }) => {
   const hasIncremented = useRef(false);
@@ -65,6 +66,12 @@ const AdThankYouSection = ({
           <a href={revolutLink} target="_blank" rel="noopener noreferrer">
             <Gift size={18} className="mr-2 transition-colors" />
             Revolut do Leão
+          </a>
+        </Button>
+        <Button asChild variant="secondary" className="w-full sm:w-auto hover:bg-primary/90 px-4">
+          <a href={paypalLink} target="_blank" rel="noopener noreferrer">
+            <Gift color='black' size={18} className="mr-2 transition-colors" />
+            Paypal
           </a>
         </Button>
       </div>

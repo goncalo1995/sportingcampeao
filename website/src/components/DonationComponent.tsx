@@ -175,7 +175,7 @@ const DonationComponent = ({
                                         </button>
                                     </div>
                                 </div>
-                                <div onClick={() => {setTotalAmount(0); setActiveDescription({title: '', text: ''})}} className="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => {setTotalAmount(totalAmount -1); setActiveDescription({title: '', text: ''})}} className="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button
                                             className={clsx(
