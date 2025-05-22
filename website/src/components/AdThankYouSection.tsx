@@ -2,9 +2,16 @@ import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, X, Gift, ShieldCheck, TriangleAlert } from 'lucide-react'; // Adicionei Gift e Shirt
 import { Link } from "react-router-dom";
+import Activity from "@/components/Activity"
+import DonationComponent from "@/components/DonationComponent"
 
 const AdThankYouSection = ({
+  likes = 0,
+  views = 0,
   onWatchAgain,
+  onShare,
+  onLike,
+  onRepost,
   onClose,
   onIncrementViewCount, // Função para chamar o incremento
   adSlotContent, // O conteúdo JSX do seu bloco de anúncio (ou null se não houver)
@@ -13,14 +20,14 @@ const AdThankYouSection = ({
 }) => {
   const hasIncremented = useRef(false);
 
-  useEffect(() => {
-    // Incrementar a visualização quando esta secção é mostrada
-    // (assumindo que "mostrar anúncio" conta como parte da visualização completa)
-    if (onIncrementViewCount && !hasIncremented.current) {
-      onIncrementViewCount();
-      hasIncremented.current = true;
-    }
-  }, [onIncrementViewCount]);
+  // useEffect(() => {
+  //   // Incrementar a visualização quando esta secção é mostrada
+  //   // (assumindo que "mostrar anúncio" conta como parte da visualização completa)
+  //   if (onIncrementViewCount && !hasIncremented.current) {
+  //     onIncrementViewCount();
+  //     hasIncremented.current = true;
+  //   }
+  // }, [onIncrementViewCount]);
 
   const AdPlaceholder = () => (
     <div className="my-6 p-4 bg-muted/50 border border-dashed border-border rounded-md min-h-[200px] sm:min-h-[250px] flex flex-col items-center justify-center text-center">
@@ -38,16 +45,29 @@ const AdThankYouSection = ({
 
   return (
     <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card text-card-foreground rounded-xl shadow-xl text-center w-full max-w-2xl mx-auto">
-      <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">
+      {/* <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">
         Ajuda um campeão a comprar o seu lugar de Leão!
-      </h2>
+      </h2> */}
       {/* <p className="text-muted-foreground mb-5 px-2">
         A tua visualização é mais um passo para o nosso grande objetivo! Obrigado do fundo do coração verde e branco.
       </p> */}
 
       {/* <AdPlaceholder /> */}
 
-      {!adSlotContent && ( // Mostrar estas opções apenas se NÃO houver anúncio carregado
+      {!adSlotContent ? <DonationComponent /> : null }
+
+      <Activity
+        likes={likes}
+        reposts={0}
+        views={views}
+        liked={false}
+        reposted={false}
+        onShare={onShare}
+        onLike={onLike}
+        onRepost={onRepost}
+      />
+
+      {!adSlotContent && false && ( // Mostrar estas opções apenas se NÃO houver anúncio carregado
         <div className="my-6 space-y-4">
           <p className="text-lg font-semibold text-foreground">
             Sabias que basta 
@@ -83,23 +103,17 @@ const AdThankYouSection = ({
       )}
 
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-6">
-        <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto">
-          <RotateCcw size={16} className="mr-2" />
-          Ver novamente
+      <div className="flex flex-row gap-8 sm:gap-4 justify-center mt-6">
+        <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto px-4">
+          <RotateCcw size={18} className="mr-2" />
+          Bisualizar
         </Button>
-        <Button asChild variant="destructive" className="w-full sm:w-auto text-primary-foreground">
-        <Link to="/bolanacamara">
-          <TriangleAlert size={18} className="mr-2 text-amber-600 group-hover:text-amber-500 transition-colors" />
-            Tens a certeza?
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+        {/* <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
           <a href={revolutLink} target="_blank" rel="noopener noreferrer">
             <Gift size={18} className="mr-2 text-amber-600 group-hover:text-amber-500 transition-colors" />
-            Revolut
+            Would you help?
           </a>
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

@@ -4,10 +4,106 @@ import { Play, RotateCcw, X, Eye } from 'lucide-react'; // Ícone Eye adicionado
 import { supabase } from '@/lib/supabaseClient'; // Importar o cliente Supabase
 import AdThankYouSection from '@/components/AdThankYouSection'
 import Header from '@/components/Header';
-import ViewCounterJar from '@/components/ViewCounterJar'; // Importar o novo componente
-
+import HourlyViewsBarChart from "@/components/HourlyViewsBarChart"
+import AnimatedScorePlacard from '@/components/AnimatedScorePlacard';
+import HelpInteraction from "@/components/HelpInteraction"
+import NumberFlow, { continuous } from '@number-flow/react'
+import DonationComponent from '@/components/DonationComponent';
+import Activity from '@/components/Activity';
 // Identificador único para o seu vídeo na tabela do Supabase
 const VIDEO_IDENTIFIER = 'boladobicampeao'; // Mude se necessário
+
+interface ShareData {
+  title?: string;
+  text?: string;
+  url?: string;
+}
+
+/**
+ * Handles sharing the current page or provided content.
+ * Attempts to use the Web Share API, then falls back to copying the URL to the clipboard.
+ * Provides user feedback via alerts (in a real app, use a toast notification system).
+ *
+ * @param customShareData Optional custom data to share. If not provided, uses current page title and URL.
+ */
+function handleShare(customShareData?: ShareData): void {
+  const pageTitle = document.title;
+  const pageUrl = window.location.href;
+
+  const shareData: Required<ShareData> = {
+    title: customShareData?.title || pageTitle,
+    text: customShareData?.text || `Check out this page: ${pageTitle}`,
+    url: customShareData?.url || pageUrl,
+  };
+
+  // 1. Try Web Share API
+  if (navigator.share) {
+    navigator.share(shareData)
+      .then(() => {
+        console.log('Content shared successfully via Web Share API!');
+        // alert('Shared successfully!'); // Optional: give feedback
+      })
+      .catch((error) => {
+        // Common errors: AbortError if user cancels, NotAllowedError if not in secure context or feature policy blocks
+        console.warn('Web Share API error or cancelled:', error);
+        // Don't fall back immediately if user cancels, they might not want to copy either.
+        // If error is not AbortError, you could consider a fallback.
+        // For simplicity, we'll just log it. If navigator.share exists but fails for other reasons,
+        // it won't automatically try the clipboard method below unless navigator.share was undefined.
+      });
+  }
+  // 2. Try Clipboard API (if Web Share not available or not used)
+  else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareData.url)
+      .then(() => {
+        alert('Link copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Failed to copy URL with Clipboard API:', err);
+        // Fallback to legacy method if Clipboard API fails
+        legacyCopyToClipboard(shareData.url);
+      });
+  }
+  // 3. Try legacy execCommand
+  else {
+    legacyCopyToClipboard(shareData.url);
+  }
+}
+
+/**
+ * Legacy method to copy text to clipboard using document.execCommand.
+ * @param text The text to copy.
+ */
+function legacyCopyToClipboard(text: string): void {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+
+  // Styling to make it invisible and out of flow
+  textArea.style.position = 'fixed';
+  textArea.style.top = '-9999px';
+  textArea.style.left = '-9999px';
+  textArea.style.opacity = '0';
+  textArea.style.pointerEvents = 'none';
+
+  document.body.appendChild(textArea);
+  textArea.focus(); // Focus on the element
+  textArea.select(); // Select its content
+
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      alert('Link copied to clipboard (legacy method)!');
+    } else {
+      console.error('Legacy execCommand("copy") failed.');
+      alert('Could not copy link automatically. Please copy it manually.');
+    }
+  } catch (err) {
+    console.error('Error during legacy execCommand("copy"):', err);
+    alert('Could not copy link automatically. Please copy it manually.');
+  }
+
+  document.body.removeChild(textArea);
+}
 
 // --- Componentes SimpleHeader, SimpleFooter e AdThankYouSection permanecem os mesmos ---
 const SimpleHeader = () => (
@@ -50,13 +146,30 @@ const OLDAdThankYouSection = ({ onWatchAgain, onClose }) => {
 
 export default function HomePage() {
   const [showVideo, setShowVideo] = useState(false);
-  const [isVideoFinished, setIsVideoFinished] = useState(false);
+  const [isVideoFinished, setIsVideoFinished] = useState(true);
   const [viewCount, setViewCount] = useState(0); // Estado para a contagem de visualizações
   const [isLoadingCount, setIsLoadingCount] = useState(true);
   const videoContainerRef = useRef(null);
   const videoRef = useRef(null);
   const hasIncrementedViewThisSession = useRef(false);
   const [adContent, setAdContent] = useState(null); // ou useState(<p>Anúncio Simulado!</p>);
+  const [simulatedHourlyData, setSimulatedHourlyData] = useState([]);
+
+  useEffect(() => {
+    // Simular dados horários para demonstração
+    // Numa app real, isto viria do Supabase (tabela agregada)
+    const now = new Date();
+    const data = [];
+    for (let i = 5; i >= 0; i--) { // Últimas 6 horas
+      const hour = new Date(now);
+      hour.setHours(now.getHours() - i, 0, 0, 0);
+      data.push({
+        hour: hour.toISOString(),
+        viewsInHour: Math.floor(Math.random() * 50) + (i === 0 ? viewCount % 50 : 10), // Simular dados
+      });
+    }
+    setSimulatedHourlyData(data);
+  }, [viewCount]); // Recalcular simulação quando viewCount muda (apenas para demo)
 
   // Função para buscar a contagem inicial e configurar o real-time
   useEffect(() => {
@@ -233,13 +346,14 @@ export default function HomePage() {
 
   const handleWatchAgain = () => {
     setIsVideoFinished(false);
-    incrementViewCountViaFunction();
+    // incrementViewCountViaFunction();
     setAdContent(null);
-    hasIncrementedViewThisSession.current = false; // Permitir novo incremento
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(error => console.error("Erro ao dar play:", error));
-    }
+    // hasIncrementedViewThisSession.current = false; // Permitir novo incremento
+    // if (videoRef.current) {
+    //   videoRef.current.currentTime = 0;
+    //   videoRef.current.play().catch(error => console.error("Erro ao dar play:", error));
+    // }
+    handlePlayVideo()
   };
 
   const handleCloseAdSection = () => {
@@ -257,12 +371,20 @@ export default function HomePage() {
       <main className="flex-grow flex flex-col items-center justify-center w-full">
         {!showVideo && !isVideoFinished && (
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+            {/* <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               Tricampeão? 🦁
-            </h2>
+            </h2> */}
             {/* <p className="text-lg text-muted-foreground mb-2 max-w-xl mx-auto">
               Vamos ver...
             </p> */}
+
+                  {/* Placar Sempre Visível no Topo */}
+            <div className="mt-24">
+              <AnimatedScorePlacard viewCount={viewCount} isLoading={isLoadingCount} minDisplayDigits={5} />
+            </div>
+
+              <DonationComponent />
+
             <Button onClick={handlePlayVideo} size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Play size={20} className="mr-2" />
               Vamos ver...
@@ -274,6 +396,21 @@ export default function HomePage() {
             </div> */}
           </div>
         )}
+
+        {/* <div className="p-4 bg-card rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold mb-4 text-center text-foreground">Atividade por Hora (Demo)</h3>
+          <HourlyViewsBarChart hourlyData={simulatedHourlyData} />
+        </div> */}
+
+        {/* {!isLoadingCount && viewCount > 0 && (
+          <div className="mt-12 w-full max-w-3xl mx-auto">
+            <RealtimeViewsLineChart
+              initialViewCount={viewCount} // Passar o viewCount inicial para o primeiro render
+              viewCountUpdates$={viewCount} // Passar o viewCount atual para atualizações
+              // videoIdentifier={VIDEO_IDENTIFIER} // Se o componente precisar dele
+            />
+          </div>
+        )} */}
 
         {showVideo && !isVideoFinished && (
           <div ref={videoContainerRef} className="w-full max-w-4xl aspect-video bg-black rounded-lg shadow-2xl overflow-hidden">
@@ -291,8 +428,11 @@ export default function HomePage() {
           </div>
         )}
 
-        {isVideoFinished && (
-          <AdThankYouSection
+        {isVideoFinished ?
+        <>
+           <AdThankYouSection
+            views={viewCount}
+            onShare={handleShare}
             onWatchAgain={handleWatchAgain} // Passar a função correta
             onClose={handleCloseAdSection}
             onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
@@ -300,7 +440,10 @@ export default function HomePage() {
             revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
             sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
           />
-        )}
+          {/* <HelpInteraction /> */}
+
+        </>
+         : null}
       </main>
 
       <SimpleFooter />
