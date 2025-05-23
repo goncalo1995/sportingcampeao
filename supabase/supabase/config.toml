@@ -20,3 +20,25 @@ entrypoint = "./functions/record-and-get-interaction-stats/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/record-and-get-interaction-stats/*.html" ]
+
+[functions.like-video]
+enabled = true
+verify_jwt = true
+import_map = "./functions/like-video/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/like-video/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/like-video/*.html" ]
+
+[functions.like-unlike-video]
+enabled = true
+verify_jwt = true
+import_map = "./functions/like-unlike-video/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/like-unlike-video/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/like-unlike-video/*.html" ]

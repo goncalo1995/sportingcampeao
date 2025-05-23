@@ -45,7 +45,7 @@ const AdThankYouSection = ({
   );
 
   return (
-    <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card text-card-foreground rounded-xl shadow-xl text-center w-full max-w-3xl mx-auto">
+    <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card text-card-foreground text-center w-full max-w-3xl mx-auto">
       {/* <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">
         Ajuda um campeão a comprar o seu lugar de Leão!
       </h2> */}
@@ -58,10 +58,10 @@ const AdThankYouSection = ({
       {!adSlotContent ? <DonationComponent /> : null }
 
       <div className="flex flex-col sm:flex-row gap-5 justify-center mt-6">
-        <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto px-4">
+        {/* <Button onClick={onWatchAgain} variant="secondary" className="w-full sm:w-auto px-4">
           <RotateCcw size={18} className="mr-2" />
           Bisualizar
-        </Button>
+        </Button> */}
         {/* <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
           <a href={revolutLink} target="_blank" rel="noopener noreferrer">
             <Gift size={18} className="mr-2 transition-colors" />

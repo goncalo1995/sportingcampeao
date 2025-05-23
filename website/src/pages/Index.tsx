@@ -11,6 +11,7 @@ import HelpInteraction from "@/components/HelpInteraction"
 import NumberFlow, { continuous } from '@number-flow/react'
 import DonationComponent from '@/components/DonationComponent';
 import Activity from '@/components/Activity';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 // Identificador único para o seu vídeo na tabela do Supabase
 const VIDEO_IDENTIFIER = 'boladobicampeao'; // Mude se necessário
 const LOCAL_STORAGE_SESSION_KEY = 'anonymousLikeSessionId';
@@ -421,7 +422,10 @@ const videoContainerRef = useRef(null);
   
     try {
       const { data, error } = await supabase.functions.invoke('increment-view-count', {
-        body: { video_identifier: VIDEO_IDENTIFIER },
+        body: {
+          video_identifier: VIDEO_IDENTIFIER,
+          viewer_session_id: anonymousSessionId
+        },
       });
   
       if (error) {
@@ -546,7 +550,7 @@ const videoContainerRef = useRef(null);
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-background p-4">
       <Header />
-      <div className="p-6 bg-gray-50 max-w-3xl">
+      {/* <div className="p-6 bg-gray-50 max-w-3xl">
         <div className="flex items-center mb-3">
           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
             <span className="text-2xl">🦁</span>
@@ -558,10 +562,8 @@ const videoContainerRef = useRef(null);
         </div>
         <p className="text-gray-700 text-sm leading-relaxed">
         Sportinguista desde a infância, o meu tio Luís proporcionou-me o privilégio de diversas Gameboxes ao longo dos anos. Agora, procuro angariar fundos para adquirir um Lugar de Leão e desfrutá-la por uma década junto do meu padrinho!
-                {/* <span className="text-green-600 font-medium">Com a vossa ajuda,</span>, 
-          longe da magia do estádio que tanto amo. */}
         </p>
-      </div>
+      </div> */}
 
       
       {/* <ViewCounterJar viewCount={viewCount} isLoading={isLoadingCount} /> */}
@@ -628,24 +630,37 @@ const videoContainerRef = useRef(null);
 
         {isVideoFinished ?
         <>
-           <AdThankYouSection
-              views={viewCount}
-              likes={likeCount}
-              onShare={handleShare}
-              onWatchAgain={handleWatchAgain} // Passar a função correta
-              onClose={handleCloseAdSection}
-              onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
-              adSlotContent={adContent} // Passar o conteúdo do anúncio
-              paypalLink='https://paypal.me/glcrp'
-              revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
-              sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
-              onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
-            />
+        <Button onClick={handleWatchAgain} variant="secondary" className="w-full sm:w-auto my-3">
+          <RotateCcw size={18} className="mr-2" />
+          Bisualizar
+        </Button>
+        <Accordion type="single" collapsible className="w-full max-w-2xl">
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="text-sporting hover:text-emerald-700 font-semibold">
+            Saber mais sobre como apoiar
+          </AccordionTrigger>
+          <AccordionContent className="pt-2 text-gray-600 pb-0">
+            <AdThankYouSection
+                views={viewCount}
+                likes={likeCount}
+                onShare={handleShare}
+                onWatchAgain={handleWatchAgain} // Passar a função correta
+                onClose={handleCloseAdSection}
+                onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
+                adSlotContent={adContent} // Passar o conteúdo do anúncio
+                paypalLink='https://paypal.me/glcrp'
+                revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
+                sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
+                onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
+              />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      
           {/* <HelpInteraction /> */}
 
         </>
          : null}
-      </main>
 
       <Activity
         likes={likeCount}
@@ -656,6 +671,14 @@ const videoContainerRef = useRef(null);
         onShare={handleShare}
         onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
       />
+      </main>
+
+      
+
+      {/* === Section 5: Share & Follow === */}
+    <section className="text-center border-t pt-6">
+      <h3 className="text-xl font-semibold text-gray-700 mb-4">Espalha a Magia!</h3>
+    </section>
 
       <SimpleFooter />
     </div>

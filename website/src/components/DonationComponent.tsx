@@ -3,7 +3,35 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Copy, Euro, Gift, MinusIcon, PlusIcon, Repeat, Rewind, RewindIcon, ShoppingBag } from 'lucide-react';
 import clsx from 'clsx';
-const IBAN_NUMBER = "PT50000700000001234567890";
+const IBAN_NUMBER = "PT50004587004032279704616";
+
+const playersByShirtNumber = {
+    "1": { name: "Franco Israel", position: "Guarda-Redes", shirtNumber: "1" },
+    "2": { name: "Matheus Reis", position: "Lateral Esquerdo", shirtNumber: "2" },
+    "3": { name: "Jeremiah St. Juste", position: "Defesa Central", shirtNumber: "3" },
+    "5": { name: "Hidemasa Morita", position: "Médio Centro", shirtNumber: "5" },
+    "6": { name: "Zeno Debast", position: "Defesa Central", shirtNumber: "6" }, // Assuming from "6 RSC Anderlecht Zeno Debast"
+    "8": { name: "Pedro Gonçalves", position: "Extremo Esquerdo", shirtNumber: "8" },
+    "9": { name: "Viktor Gyökeres", position: "Ponta de Lança", shirtNumber: "9" },
+    "11": { name: "Nuno Santos", position: "Lateral Esquerdo", shirtNumber: "11" },
+    "17": { name: "Francisco Trincão", position: "Extremo Direito", shirtNumber: "17" },
+    "19": { name: "Conrad Harder", position: "Ponta de Lança", shirtNumber: "19" }, // Assuming from "19 FC Nordsjaelland Conrad Harder"
+    "20": { name: "Maxi Araújo", position: "Médio Esquerdo", shirtNumber: "20" }, // Assuming from "20 Deportivo Toluca Maxi Araújo"
+    "21": { name: "Geny Catamo", position: "Extremo Direito", shirtNumber: "21" },
+    "22": { name: "Iván Fresneda", position: "Lateral Direito", shirtNumber: "22" },
+    "23": { name: "Daniel Bragança", position: "Médio Centro", shirtNumber: "23" },
+    "24": { name: "Rui Silva", position: "Guarda-Redes", shirtNumber: "24" }, // Assuming from "24 Real Bétis Rui Silva"
+    "25": { name: "Gonçalo Inácio", position: "Defesa Central", shirtNumber: "25" },
+    "26": { name: "Ousmane Diomande", position: "Defesa Central", shirtNumber: "26" },
+    "30": { name: "Biel", position: "Extremo Esquerdo", shirtNumber: "30" }, // Assuming from "30 EC Bahia Biel"
+    "42": { name: "Morten Hjulmand", position: "Médio Defensivo", shirtNumber: "42" },
+    "47": { name: "Ricardo Esgaio", position: "Lateral Direito", shirtNumber: "47" },
+    "51": { name: "Diogo Pinto", position: "Guarda-Redes", shirtNumber: "51" },
+    "52": { name: "João Simões", position: "Médio Centro", shirtNumber: "52" }, // Assuming from "52 Sporting CP B João Simões"
+    "57": { name: "Geovany Quenda", position: "Extremo Esquerdo", shirtNumber: "57" }, // Assuming from "57 Sporting CP Sub-23 Geovany Quenda"
+    "72": { name: "Eduardo Quaresma", position: "Defesa Central", shirtNumber: "72" },
+    "73": { name: "Eduardo Felicíssimo", position: "Médio Defensivo", shirtNumber: "73" } // Assuming from "73 Sporting CP B Eduardo Felicíssimo"
+  };
 
 // Mock data (same as before)
 const playerThankYouMessages = {
@@ -33,8 +61,8 @@ const playerThankYouMessages = {
     "9": (name) => `€9! GYÖKERES! Matador! Este apoio é um golo na gaveta! Obrigado, Viking goleador! 🇸🇪⚽️💪`,
     "19": (name) => `€19! O futuro ${name} agradece! Este apoio é um investimento num goleador! Dinamáquina! 🇩🇰💣`,
     // Add more general messages for amounts not matching a player
-    "generic_small": (amount) => `Obrigado pelos teus €${amount}! Cada euro conta para nós! 😊`,
-    "generic_medium": (amount) => `Wow, €${amount}! Que apoio generoso! Estamos muito gratos! 😄`,
+    "generic_small": (amount) => `Obrigado pelos teus €${amount}, cada euro conta! 💚🤍`,
+    "generic_medium": (amount) => `Wow, €${amount}! Que apoio generoso! Muito obrigado! 😄`,
     "generic_large": (amount) => `Uns impressionantes €${amount}! És uma verdadeira lenda! Muito obrigado! 🤩🦁`,
 };
 
@@ -168,147 +196,7 @@ const DonationComponent = ({
     const [thankYouMessage, setThankYouMessage] = useState('');
     const [lastActionWasItemClickWithDescription, setLastActionWasItemClickWithDescription] = useState(false);
     const [showDonationLinks, setShowDonationLinks] = useState(false)
-
-    function parsePlayerData(playerDataString) {
-        // ... (parser function as defined above) ...
-        const players = {};
-        const lines = playerDataString.trim().split('\n');
-        let currentShirtNumber = null;
-        let currentPlayerName = null;
     
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-            const playerLineMatch = line.match(/^(\d+)\s+(?:.+?\s+)?([A-Za-zÀ-ÖØ-öø-ÿ\s\.]+?)\s+\2/);
-            if (playerLineMatch) {
-                currentShirtNumber = playerLineMatch[1];
-                currentPlayerName = playerLineMatch[2].trim();
-                if (i + 1 < lines.length) {
-                    const nextLine = lines[i + 1].trim();
-                    const knownPositions = ["Guarda-Redes", "Defesa Central", "Lateral Esquerdo", "Lateral Direito", "Médio Defensivo", "Médio Centro", "Médio Esquerdo", "Extremo Esquerdo", "Extremo Direito", "Ponta de Lança"];
-                    if (knownPositions.includes(nextLine)) {
-                        if (!players[currentShirtNumber]) {
-                            players[currentShirtNumber] = { name: currentPlayerName, position: nextLine, shirtNumber: currentShirtNumber };
-                        }
-                        i++;
-                    } else if (!players[currentShirtNumber]) {
-                         players[currentShirtNumber] = { name: currentPlayerName, position: "Jogador Estrela", shirtNumber: currentShirtNumber };
-                    }
-                } else if (!players[currentShirtNumber]) {
-                     players[currentShirtNumber] = { name: currentPlayerName, position: "Jogador Lendário", shirtNumber: currentShirtNumber };
-                }
-            }
-        }
-        return players;
-    }
-    const rawPlayerData = `
-    1
-    Franco Israel	Franco Israel
-    Guarda-Redes
-    25	Uruguai
-    Itália	30/06/2027	6,00 M €
-    24	Real Bétis
-    Rui Silva	Rui Silva
-    Guarda-Redes
-    31	Portugal	30/06/2025	6,00 M €
-    51
-    Diogo Pinto	Diogo Pinto
-    Guarda-Redes
-    20	Portugal	30/06/2026	500 mil €
-    25
-    Gonçalo Inácio	Gonçalo Inácio
-    Defesa Central
-    23	Portugal	30/06/2027	45,00 M €
-    26
-    Ousmane Diomande	Ousmane Diomande
-    Defesa Central
-    21	Costa do Marfim	30/06/2027	40,00 M €
-    6	RSC Anderlecht
-    Zeno Debast	Zeno Debast
-    Defesa Central
-    21	Bélgica	30/06/2029	26,00 M €
-    72
-    Eduardo Quaresma	Eduardo Quaresma
-    Defesa Central
-    23	Portugal	30/06/2028	14,00 M €
-    3
-    Jeremiah St. Juste	Jeremiah St. Juste
-    Defesa Central
-    28	Holanda
-    São Cristovão e Nevis	30/06/2026	6,00 M €
-    11
-    Nuno Santos	Nuno Santos
-    Lateral Esquerdo
-    30	Portugal	30/06/2027	9,00 M €
-    2
-    Matheus Reis	Matheus Reis
-    Lateral Esquerdo
-    30	Brasil	30/06/2026	7,00 M €
-    22
-    Iván Fresneda	Iván Fresneda
-    Lateral Direito
-    20	Espanha	30/06/2028	8,00 M €
-    47
-    Ricardo Esgaio	Ricardo Esgaio
-    Lateral Direito
-    32	Portugal	30/06/2026	2,00 M €
-    42
-    Morten Hjulmand	Morten Hjulmand
-    Médio Defensivo
-    25	Dinamarca	30/06/2028	45,00 M €
-    73	Sporting CP B
-    Eduardo Felicíssimo	Eduardo Felicíssimo
-    Médio Defensivo
-    18	Portugal	30/06/2026	1,00 M €
-    5
-    Hidemasa Morita	Hidemasa Morita
-    Médio Centro
-    30	Japão	30/06/2026	15,00 M €
-    23
-    Daniel Bragança	Daniel Bragança
-    Médio Centro
-    25	Portugal	30/06/2027	12,00 M €
-    52	Sporting CP B
-    João Simões	João Simões
-    Médio Centro
-    18	Portugal	30/06/2025	6,00 M €
-    20	Deportivo Toluca
-    Maxi Araújo	Maxi Araújo
-    Médio Esquerdo
-    25	Uruguai	30/06/2029	14,00 M €
-    57	Sporting CP Sub-23
-    Geovany Quenda	Geovany Quenda
-    Extremo Esquerdo
-    18	Portugal
-    Guiné Bissau	30/06/2027	45,00 M €
-    8
-    Pedro Gonçalves	Pedro Gonçalves
-    Extremo Esquerdo
-    26	Portugal	30/06/2027	30,00 M €
-    30	EC Bahia
-    Biel	Biel
-    Extremo Esquerdo
-    24	Brasil	30/06/2029	5,00 M €
-    17
-    Francisco Trincão	Francisco Trincão
-    Extremo Direito
-    25	Portugal	30/06/2027	30,00 M €
-    21
-    Geny Catamo	Geny Catamo
-    Extremo Direito
-    24	Moçambique	30/06/2028	15,00 M €
-    9
-    Viktor Gyökeres	Viktor Gyökeres
-    Ponta de Lança
-    26	Suécia
-    Hungria	30/06/2028	75,00 M €
-    19	FC Nordsjaelland
-    Conrad Harder	Conrad Harder
-    Ponta de Lança
-    20	Dinamarca	30/06/2029	24,00 M €
-    `;
-    const playersByShirtNumber = parsePlayerData(rawPlayerData);
-
     useEffect(() => {
         const sortedOptions = [...mockInteractionOptions].sort((a, b) => a.display_order - b.display_order);
         //setOptions(sortedOptions);
@@ -409,10 +297,25 @@ const DonationComponent = ({
                 {/* <p className="text-slate-600 text-lg">Show your appreciation with a virtual treat!</p> */}
             </div>
 
-            <div className="mb-6">
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Gostas do que vês?</h2>
-                <p className="text-slate-600 text-lg">Mostra o teu apoio com um miminho virtual!</p>
-            </div>
+            <div className="mb-8 text-center"> {/* Adicionado text-center para melhor apresentação geral */}
+  <h2 className="text-4xl font-extrabold text-emerald-700 mb-3 tracking-tight">
+    <span className="block">E tu, paravas o video para apanhar a bola?</span> {/* Ou algo mais específico do vídeo */}
+  </h2>
+  <p className="text-xl text-slate-700 max-w-lg mx-auto">
+    Mostra que és um verdadeiro Campeão! Apoia um Leão a ter o seu Lugar de Leão, junto do tio João! 🦁💚
+  </p>
+</div>
+
+            {activeDescription.text && (
+                        <div className="p-4 rounded-lg text-left w-full border-2 border-sporting mt-4 lg:mt-0">
+                            <h4 className="text-lg font-semibold text-green-700 mb-1">
+                                {formatTitle(activeDescription.title)}!
+                            </h4>
+                            <p className="text-sm text-slate-700 leading-relaxed">
+                                {activeDescription.text}
+                            </p>
+                        </div>
+                    )}
 
             {/* Thank You Message Display */}
             {thankYouMessage && (
@@ -435,13 +338,13 @@ const DonationComponent = ({
                             onClick={() => handleOptionClick(option)}
                             className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                                 totalAmount === option.amount
-                                ? 'border-sporting bg-green-50'
+                                ? 'border-sporting'
                                 : 'border-gray-200 hover:border-sporting'
                             }`}
                             >
                             <div className="flex justify-between items-center">
                                 <div>
-                                <div className="font-semibold text-green-600">€{option.amount}</div>
+                                <div className="font-semibold text-sporting">€{option.amount}</div>
                                 <div className="text-sm text-gray-600">{option.display_label}</div>
                                 </div>
                                 <div className="text-xs text-gray-500 text-right">
@@ -463,16 +366,7 @@ const DonationComponent = ({
                             </button>
                         ))}
                     </div> */}
-                    {activeDescription.text && (
-                        <div className="p-4 rounded-lg text-left w-full max-w-lg border-2 border-sporting mt-4 lg:mt-0">
-                            <h4 className="text-lg font-semibold text-green-700 mb-1">
-                                {formatTitle(activeDescription.title)}!
-                            </h4>
-                            <p className="text-sm text-slate-700 leading-relaxed">
-                                {activeDescription.text}
-                            </p>
-                        </div>
-                    )}
+
                     
                     { showDonationLinks ?
                         <>
@@ -500,7 +394,7 @@ const DonationComponent = ({
                      <div className="flex items-center justify-center">
                          <Euro className="w-5 h-5 mr-2" />
                          {totalAmount ? 
-                         `Contribuir €${totalAmount}` : 
+                         `Como posso contribuir?` : 
                          'Seleciona um valor'
                          }
                      </div>
@@ -513,7 +407,7 @@ const DonationComponent = ({
                 {totalAmount > 0 && (
                     <div className="flex-1 flex flex-col items-center gap-5">
                     {/* T-Shirt Display with Real Image */}
-                    <div className="text-center w-full max-w-[270px] sm:max-w-[270px] mx-auto"> {/* Control max width of T-shirt display */}
+                    <div className="text-center w-full max-w-[360px] xl:max-w-[300px] mx-auto mt-6"> {/* Control max width of T-shirt display */}
                         <div className="relative w-full"> {/* Parent for positioning, takes full width of its constrained parent */}
                             <img
                                 src={isFrontTshirt ? tshirtImageUrl : backTshirtUrl}
@@ -568,7 +462,7 @@ const DonationComponent = ({
                                         </button>
                                     </div>
                                 </div>
-                                <div onClick={() => {setTotalAmount(totalAmount -2); setActiveDescription({title: '', text: ''})}} className="absolute bottom-0 left-3/4 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => {setTotalAmount(totalAmount +1); setActiveDescription({title: '', text: ''})}} className="absolute bottom-0 left-3/4 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button
                                             className={clsx(
