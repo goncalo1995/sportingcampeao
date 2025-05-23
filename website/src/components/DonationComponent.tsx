@@ -67,9 +67,9 @@ const playerThankYouMessages = {
 };
 
 const donationOptions = [
-    { amount: 1, display_label: "Um pequeno leão 🦁", impact: "Cada euro conta!" },
+    { amount: 1, display_label: "Um pequeno leão", impact: "Cada euro conta!" },
     { amount: 3, display_label: "Uma cerveja nas roloutes", impact: "Obrigado sportinguista!" },
-    { amount: 5, display_label: "Uma camisola do coração", impact: "És um verdadeiro leão!" },
+    { amount: 5, display_label: "Uma \"refeição\" nas roloutes", impact: "És um verdadeiro leão!" },
     { amount: 9, display_label: "Com ou sem Gyokeres ", impact: "Sporting no coração!" }
     // { amount: 25, description: "Meio lugar de sócio", impact: "Leão de ouro!" }
   ];
@@ -302,7 +302,7 @@ const DonationComponent = ({
     <span className="block">E tu, paravas o video para apanhar a bola?</span> {/* Ou algo mais específico do vídeo */}
   </h2>
   <p className="text-xl text-slate-700 max-w-lg mx-auto">
-    Mostra que és um verdadeiro Campeão! Apoia um Leão a ter o seu Lugar de Leão, junto do tio João! 🦁💚
+    Mostra que és um verdadeiro Campeão e apoia o Gonçalo a comprar o seu Lugar de Leão, junto do tio João! 🦁💚
   </p>
 </div>
 

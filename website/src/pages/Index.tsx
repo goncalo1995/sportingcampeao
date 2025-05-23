@@ -414,6 +414,8 @@ const videoContainerRef = useRef(null);
     } finally {
       likeActionInProgress.current = false;
       setIsLiking(false);
+      setLikeCount(likeCount-1)
+      setSessionHasLiked(false)
     }
   };
 
@@ -666,7 +668,7 @@ const videoContainerRef = useRef(null);
         likes={likeCount}
         reposts={0}
         views={viewCount}
-        liked={false}
+        liked={sessionHasLiked}
         reposted={false}
         onShare={handleShare}
         onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
