@@ -12,6 +12,7 @@ import NumberFlow, { continuous } from '@number-flow/react'
 import DonationComponent from '@/components/DonationComponent';
 import Activity from '@/components/Activity';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Link } from "react-router-dom";
 // Identificador único para o seu vídeo na tabela do Supabase
 const VIDEO_IDENTIFIER = 'boladobicampeao'; // Mude se necessário
 const LOCAL_STORAGE_SESSION_KEY = 'anonymousLikeSessionId';
@@ -597,7 +598,13 @@ const videoContainerRef = useRef(null);
               {isLoadingCount ? 'A carregar visualizações...' : `${viewCount.toLocaleString('pt-PT')} visualizações`}
             </div> */}
           </div>
+          
         )}
+
+          {/* <p className="mt-12 text-sm text-muted-foreground">
+            <a href="/short" className="hover:underline">A defesa</a>
+          </p> */}
+
 
         {/* <div className="p-4 bg-card rounded-lg shadow-md">
           <h3 className="text-xl font-semibold mb-4 text-center text-foreground">Atividade por Hora (Demo)</h3>
@@ -618,7 +625,7 @@ const videoContainerRef = useRef(null);
           <div ref={videoContainerRef} className="w-full max-w-4xl aspect-video bg-black rounded-lg shadow-2xl overflow-hidden">
             <video
               ref={videoRef}
-              src="https://pub-3a57e53548b04fb79ef081d08940016c.r2.dev/bola-cut.mov"
+              src="https://cdn.sportingcampeao.pt/bola-cut.mp4"
               controls
               onEnded={handleVideoEnded}
               className="w-full h-full"
@@ -673,6 +680,12 @@ const videoContainerRef = useRef(null);
         onShare={handleShare}
         onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
       />
+
+        <Button size="lg" variant='ghost' className="mt-4 bg-white hover:border border-primary/90 text-sporting">
+              <Link to="/short">
+                Versão Guarda-Redes
+              </Link>
+            </Button>
       </main>
 
       

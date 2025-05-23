@@ -10,6 +10,8 @@ import HallOfFame from "./pages/HallOfFame";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import DangerousPage from "./pages/DangerousPage"
+import ShortVideoPage from "./pages/ShortVideoPage"
+import ShortPage from "./pages/ShortPage"
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
           <Route path="/leoes" element={<HallOfFame />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/shorttt" element={<ShortPage />} /> 
+          <Route path="/short" element={<ShortVideoPage />} /> 
           <Route path="/bolanacamara" element={<DangerousPage />} /> 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
