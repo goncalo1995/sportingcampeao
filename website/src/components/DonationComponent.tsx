@@ -1,10 +1,50 @@
 // DonationComponent.jsx
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
-import { Gift, Repeat, Rewind, RewindIcon, ShoppingBag } from 'lucide-react';
+import { Copy, Euro, Gift, MinusIcon, PlusIcon, Repeat, Rewind, RewindIcon, ShoppingBag } from 'lucide-react';
 import clsx from 'clsx';
+const IBAN_NUMBER = "PT50000700000001234567890";
 
 // Mock data (same as before)
+const playerThankYouMessages = {
+    "1": (name) => `Obrigado pelo teu €1! Como o ${name}, és o nosso número 1! Defender este apoio é o nosso golo! 🥅🧤`,
+    "24": (name) => `€24! Grande defesa! O ${name} ficaria orgulhoso deste apoio. Mãos de ferro, coração de Leão! 🦁`,
+    "51": (name) => `€51! Uau, o jovem ${name} agradece este investimento no futuro! Brilhante! ✨`,
+    "25": (name) => `€25! Defesa imperial! Com este apoio, és o nosso ${name}, patrão da área! 💪`,
+    "26": (name) => `€26! Que muralha! O ${name} não deixaria passar nada, tal como o teu apoio! Obrigado! 🛡️`,
+    "6": (name) => `€6! Com a classe do ${name}, este apoio vale ouro! Obrigado pela solidez! 💎`,
+    "72": (name) => `€72! Incrível! O ${name} mostra garra e tu mostras um apoio tremendo! Força! 🔥`,
+    "3": (name) => `€3! Rápido e eficaz como o ${name}! Este apoio chegou na hora certa! ⚡`,
+    "11": (name) => `€11! Com a magia do ${name} na ala, este apoio dá-nos asas! Obrigado, craque! 🚀`,
+    "2": (name) => `€2! Polivalente como o ${name}, este apoio vale por muitos! Obrigado! 👍`,
+    "22": (name) => `€22! Futuro craque! O ${name} agradece este sprint de generosidade! 🏃💨`,
+    "47": (name) => `€47! Experiência e dedicação! Como o capitão ${name} (no espírito!), este apoio é fundamental! Obrigado! 🟢⚪`,
+    "42": (name) => `€42! Que pulmão! O nosso ${name} do meio-campo agradece este apoio incansável! Viking! 🛡️🇩🇰`,
+    "73": (name) => `€73! Com a juventude e talento do ${name}, este apoio é um investimento no futuro! Obrigado! 🌱`,
+    "5": (name) => `€5! Samurai! Com a garra do ${name}, este apoio é uma lição de entrega! Arigato! 🎌`,
+    "23": (name) => `€23! Que classe, ${name}! Este apoio tem o toque de magia do nosso maestro! 🪄`,
+    "52": (name) => `€52! Visão de jogo! O jovem ${name} vê um futuro brilhante com este apoio! Obrigado! 🌟`,
+    "20": (name) => `€20! Golaço! O ${name} faria um golaço destes! Obrigado pelo espetáculo de apoio! ⚽️`,
+    "57": (name) => `€57! Driblador! Como o ${name}, fintaste a indiferença e marcaste um golo de solidariedade! Obrigado! 🌪️`,
+    "8": (name) => `€8! POTE de OURO! O nosso ${name} agradece este remate certeiro de generosidade! Obrigado, mágico! ✨🎯`,
+    "30": (name) => `€30! Que velocidade! O ${name} agradece este apoio que nos leva mais longe! Valeu! 💨🇧🇷`,
+    "17": (name) => `€17! TRINCA MÁGICO! Este apoio tem a classe e a finta do ${name}! Obrigado pelo espetáculo! 🪄✨`,
+    "21": (name) => `€21! Flecha africana! O ${name} voaria com este apoio! Obrigado pela energia contagiante! 🇲🇿⚡`,
+    "9": (name) => `€9! GYÖKERES! Matador! Este apoio é um golo na gaveta! Obrigado, Viking goleador! 🇸🇪⚽️💪`,
+    "19": (name) => `€19! O futuro ${name} agradece! Este apoio é um investimento num goleador! Dinamáquina! 🇩🇰💣`,
+    // Add more general messages for amounts not matching a player
+    "generic_small": (amount) => `Obrigado pelos teus €${amount}! Cada euro conta para nós! 😊`,
+    "generic_medium": (amount) => `Wow, €${amount}! Que apoio generoso! Estamos muito gratos! 😄`,
+    "generic_large": (amount) => `Uns impressionantes €${amount}! És uma verdadeira lenda! Muito obrigado! 🤩🦁`,
+};
+
+const donationOptions = [
+    { amount: 1, display_label: "Um pequeno leão 🦁", impact: "Cada euro conta!" },
+    { amount: 3, display_label: "Uma cerveja nas roloutes", impact: "Obrigado sportinguista!" },
+    { amount: 5, display_label: "Uma camisola do coração", impact: "És um verdadeiro leão!" },
+    { amount: 9, display_label: "Com ou sem Gyokeres ", impact: "Sporting no coração!" }
+    // { amount: 25, description: "Meio lugar de sócio", impact: "Leão de ouro!" }
+  ];
 const mockInteractionOptions = [
     {
         id: 'uuid1',
@@ -48,6 +88,74 @@ const mockInteractionOptions = [
     }
 ];
 
+const IbanDisplayComponent = () => {
+    const [showIban, setShowIban] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const handleToggleIban = () => {
+        setShowIban(prev => !prev);
+        setCopied(false); // Reset copied status when toggling
+    };
+
+    const handleCopyToClipboard = () => {
+        navigator.clipboard.writeText(IBAN_NUMBER)
+            .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000); // Reset copied status after 2 seconds
+            })
+            .catch(err => {
+                console.error("Failed to copy IBAN: ", err);
+                alert("Erro ao copiar IBAN. Por favor, copie manualmente.");
+            });
+    };
+
+    return (
+        <div className="my-2 flex flex-col sm:flex-row items-center justify-center gap-2 w-full">
+            {!showIban ? (
+                <Button
+                    variant="outline"
+                    className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 flex-grow sm:flex-grow-0"
+                    onClick={handleToggleIban}
+                >
+                    <Gift size={18} className="mr-2" />
+                    IBAN
+                    <Gift size={18} className="ml-2" />
+                </Button>
+            ) : (
+                <div className="flex flex-col sm:flex-row items-center gap-2 p-3 border border-primary/50 rounded-md bg-slate-50 w-full sm:w-auto justify-center">
+                    <div className="flex flex-col text-center sm:text-left">
+                        <span className="text-xs text-muted-foreground">IBAN para doação:</span>
+                        <span className="font-mono text-sm sm:text-base text-primary font-semibold break-all">
+                            {IBAN_NUMBER}
+                        </span>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleCopyToClipboard}
+                        className="text-primary hover:bg-primary/10 p-2 rounded-full"
+                        aria-label="Copiar IBAN"
+                    >
+                        {copied ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        ) : (
+                            <Copy size={20} />
+                        )}
+                    </Button>
+                     <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleToggleIban} // Button to hide IBAN again
+                        className="mt-2 sm:mt-0 sm:ml-2"
+                    >
+                        Ocultar
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const DonationComponent = ({
     revolutUsername = "sportingcampeao",
     tshirtImageUrl = "https://cdn-scp.azureedge.net/lojaverdeonline/0012596_camisola-principal-cpub-2526.jpeg", // Pass your t-shirt image URL as a prop
@@ -57,19 +165,216 @@ const DonationComponent = ({
     const [isFrontTshirt, setIsFronttshirt] = useState(true)
     const [activeDescription, setActiveDescription] = useState({ title: '', text: '' });
     const [options, setOptions] = useState([]);
+    const [thankYouMessage, setThankYouMessage] = useState('');
+    const [lastActionWasItemClickWithDescription, setLastActionWasItemClickWithDescription] = useState(false);
+    const [showDonationLinks, setShowDonationLinks] = useState(false)
+
+    function parsePlayerData(playerDataString) {
+        // ... (parser function as defined above) ...
+        const players = {};
+        const lines = playerDataString.trim().split('\n');
+        let currentShirtNumber = null;
+        let currentPlayerName = null;
+    
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            const playerLineMatch = line.match(/^(\d+)\s+(?:.+?\s+)?([A-Za-zÀ-ÖØ-öø-ÿ\s\.]+?)\s+\2/);
+            if (playerLineMatch) {
+                currentShirtNumber = playerLineMatch[1];
+                currentPlayerName = playerLineMatch[2].trim();
+                if (i + 1 < lines.length) {
+                    const nextLine = lines[i + 1].trim();
+                    const knownPositions = ["Guarda-Redes", "Defesa Central", "Lateral Esquerdo", "Lateral Direito", "Médio Defensivo", "Médio Centro", "Médio Esquerdo", "Extremo Esquerdo", "Extremo Direito", "Ponta de Lança"];
+                    if (knownPositions.includes(nextLine)) {
+                        if (!players[currentShirtNumber]) {
+                            players[currentShirtNumber] = { name: currentPlayerName, position: nextLine, shirtNumber: currentShirtNumber };
+                        }
+                        i++;
+                    } else if (!players[currentShirtNumber]) {
+                         players[currentShirtNumber] = { name: currentPlayerName, position: "Jogador Estrela", shirtNumber: currentShirtNumber };
+                    }
+                } else if (!players[currentShirtNumber]) {
+                     players[currentShirtNumber] = { name: currentPlayerName, position: "Jogador Lendário", shirtNumber: currentShirtNumber };
+                }
+            }
+        }
+        return players;
+    }
+    const rawPlayerData = `
+    1
+    Franco Israel	Franco Israel
+    Guarda-Redes
+    25	Uruguai
+    Itália	30/06/2027	6,00 M €
+    24	Real Bétis
+    Rui Silva	Rui Silva
+    Guarda-Redes
+    31	Portugal	30/06/2025	6,00 M €
+    51
+    Diogo Pinto	Diogo Pinto
+    Guarda-Redes
+    20	Portugal	30/06/2026	500 mil €
+    25
+    Gonçalo Inácio	Gonçalo Inácio
+    Defesa Central
+    23	Portugal	30/06/2027	45,00 M €
+    26
+    Ousmane Diomande	Ousmane Diomande
+    Defesa Central
+    21	Costa do Marfim	30/06/2027	40,00 M €
+    6	RSC Anderlecht
+    Zeno Debast	Zeno Debast
+    Defesa Central
+    21	Bélgica	30/06/2029	26,00 M €
+    72
+    Eduardo Quaresma	Eduardo Quaresma
+    Defesa Central
+    23	Portugal	30/06/2028	14,00 M €
+    3
+    Jeremiah St. Juste	Jeremiah St. Juste
+    Defesa Central
+    28	Holanda
+    São Cristovão e Nevis	30/06/2026	6,00 M €
+    11
+    Nuno Santos	Nuno Santos
+    Lateral Esquerdo
+    30	Portugal	30/06/2027	9,00 M €
+    2
+    Matheus Reis	Matheus Reis
+    Lateral Esquerdo
+    30	Brasil	30/06/2026	7,00 M €
+    22
+    Iván Fresneda	Iván Fresneda
+    Lateral Direito
+    20	Espanha	30/06/2028	8,00 M €
+    47
+    Ricardo Esgaio	Ricardo Esgaio
+    Lateral Direito
+    32	Portugal	30/06/2026	2,00 M €
+    42
+    Morten Hjulmand	Morten Hjulmand
+    Médio Defensivo
+    25	Dinamarca	30/06/2028	45,00 M €
+    73	Sporting CP B
+    Eduardo Felicíssimo	Eduardo Felicíssimo
+    Médio Defensivo
+    18	Portugal	30/06/2026	1,00 M €
+    5
+    Hidemasa Morita	Hidemasa Morita
+    Médio Centro
+    30	Japão	30/06/2026	15,00 M €
+    23
+    Daniel Bragança	Daniel Bragança
+    Médio Centro
+    25	Portugal	30/06/2027	12,00 M €
+    52	Sporting CP B
+    João Simões	João Simões
+    Médio Centro
+    18	Portugal	30/06/2025	6,00 M €
+    20	Deportivo Toluca
+    Maxi Araújo	Maxi Araújo
+    Médio Esquerdo
+    25	Uruguai	30/06/2029	14,00 M €
+    57	Sporting CP Sub-23
+    Geovany Quenda	Geovany Quenda
+    Extremo Esquerdo
+    18	Portugal
+    Guiné Bissau	30/06/2027	45,00 M €
+    8
+    Pedro Gonçalves	Pedro Gonçalves
+    Extremo Esquerdo
+    26	Portugal	30/06/2027	30,00 M €
+    30	EC Bahia
+    Biel	Biel
+    Extremo Esquerdo
+    24	Brasil	30/06/2029	5,00 M €
+    17
+    Francisco Trincão	Francisco Trincão
+    Extremo Direito
+    25	Portugal	30/06/2027	30,00 M €
+    21
+    Geny Catamo	Geny Catamo
+    Extremo Direito
+    24	Moçambique	30/06/2028	15,00 M €
+    9
+    Viktor Gyökeres	Viktor Gyökeres
+    Ponta de Lança
+    26	Suécia
+    Hungria	30/06/2028	75,00 M €
+    19	FC Nordsjaelland
+    Conrad Harder	Conrad Harder
+    Ponta de Lança
+    20	Dinamarca	30/06/2029	24,00 M €
+    `;
+    const playersByShirtNumber = parsePlayerData(rawPlayerData);
 
     useEffect(() => {
         const sortedOptions = [...mockInteractionOptions].sort((a, b) => a.display_order - b.display_order);
-        setOptions(sortedOptions);
+        //setOptions(sortedOptions);
+        setOptions(donationOptions)
     }, []);
 
-    const handleOptionClick = (option) => {
-        setTotalAmount(prevAmount => option.value === 1 ? prevAmount + option.value : option.value);
-        
-        if (option.description) {
-            // show for different for each
-            setActiveDescription({ title: option.option_name, text: option.description });
+    useEffect(() => {
+        if (totalAmount === 0) {
+            setThankYouMessage('');
+            setActiveDescription({ title: '', text: '' });
+            setShowDonationLinks(false)
+            return;
         }
+
+        const amountStr = totalAmount.toString();
+        const player = playersByShirtNumber[amountStr];
+
+        // Set Thank You Message
+        if (player && playerThankYouMessages[amountStr]) {
+            setThankYouMessage(playerThankYouMessages[amountStr](player.name));
+        } else if (totalAmount > 0 && totalAmount < 10) {
+            setThankYouMessage(playerThankYouMessages["generic_small"](totalAmount));
+        } else if (totalAmount >= 10 && totalAmount < 50) {
+            setThankYouMessage(playerThankYouMessages["generic_medium"](totalAmount));
+        } else if (totalAmount >= 50) {
+            setThankYouMessage(playerThankYouMessages["generic_large"](totalAmount));
+        } else {
+            setThankYouMessage('');
+        }
+
+        // Set Active Description
+        if (player) {
+            setActiveDescription({
+                title: `${player.name} (#${player.shirtNumber})`,
+                text: `Posição: ${player.position}. Um verdadeiro craque do nosso Sporting! Este apoio é digno de um Leão como tu!`
+            });
+        } else if (!lastActionWasItemClickWithDescription) {
+            // If not a player number AND the last click wasn't an item with a description,
+            // show a generic message or clear activeDescription.
+            setActiveDescription({
+                title: `Apoio de €${totalAmount}`,
+                text: 'A tua contribuição faz a diferença. Obrigado por estares connosco!'
+            });
+        }
+        // If it's not a player number BUT lastActionWasItemClickWithDescription is true,
+        // activeDescription would have been set by handleOptionClick and we leave it.
+        // Reset the flag after using it.
+        if (lastActionWasItemClickWithDescription) {
+            setLastActionWasItemClickWithDescription(false);
+        }
+
+    }, [totalAmount, lastActionWasItemClickWithDescription]);
+
+    const handleOptionClick = (option) => {
+        setTotalAmount(prevAmount => option.amount === 1 ? prevAmount + option.amount : option.amount);
+        
+        // if (option.description) {
+        //     // show for different for each
+        //     setActiveDescription({ title: option.option_name, text: option.description });
+        // }
+        // else {
+        //     //now set with usestate
+        //     //custom messages ofr sporintg players
+        //     //setActiveDescription({ title: 'aa', text: 'aaaa' });
+
+        // }
     };
 
     const handleReset = () => {
@@ -97,18 +402,32 @@ const DonationComponent = ({
     return (
         <div className="font-sans p-6 md:px-8 rounded-xl max-w-3xl mx-auto text-slate-800 text-center">
             <div className="mb-8">
+                
                 {/* <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
                     Contribui para o lugar de Leão ao pé do tio João!
                 </h2> */}
                 {/* <p className="text-slate-600 text-lg">Show your appreciation with a virtual treat!</p> */}
             </div>
 
+            <div className="mb-6">
+                <h2 className="text-3xl font-bold text-slate-900 mb-2">Gostas do que vês?</h2>
+                <p className="text-slate-600 text-lg">Mostra o teu apoio com um miminho virtual!</p>
+            </div>
+
+            {/* Thank You Message Display */}
+            {thankYouMessage && (
+                <div className="my-6 p-4 border-l-4 border-sporting text-green-700 rounded-md shadow">
+                    <p className="font-semibold text-lg">{thankYouMessage}</p>
+                </div>
+            )}
+
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mb-8">
                 {/* Options Panel */}
                 <div className="flex-1 bg-white p-5 rounded-lg">
-                    <h3 className="text-xl font-semibold text-sporting border-b-2 border-slate-200 pb-3 mb-4">
+                    {/* <h3 className="text-xl font-semibold text-sporting border-b-2 border-slate-200 pb-3 mb-4">
+                    Desde já obrigado!
                     Contribui para o lugar de Leão ao pé do tio João!
-                    </h3>
+                    </h3> */}
                     <div className="space-y-3 mb-4">
                         {options.map((option) => (
                             <button
@@ -116,8 +435,8 @@ const DonationComponent = ({
                             onClick={() => handleOptionClick(option)}
                             className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                                 totalAmount === option.amount
-                                ? 'border-green-500 bg-green-50'
-                                : 'border-gray-200 hover:border-green-300'
+                                ? 'border-sporting bg-green-50'
+                                : 'border-gray-200 hover:border-sporting'
                             }`}
                             >
                             <div className="flex justify-between items-center">
@@ -155,13 +474,46 @@ const DonationComponent = ({
                         </div>
                     )}
                     
+                    { showDonationLinks ?
+                        <>
+                        <Button asChild variant="outline" className="my-2 mr-2 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
+                            <a href={`https://revolut.me/${revolutUsername}/${totalAmount}EUR`} target="_blank" rel="noopener noreferrer">
+                            <Gift size={18} className="mr-2 transition-colors" />
+                            Revolut
+                            <Gift size={18} className="mr-2 transition-colors" />
+                            </a>
+                        </Button>
+                        <Button asChild variant="secondary" className="my-2 w-full sm:w-auto px-4 border ">
+                            <a href={`https://paypal.me/glcrp`} target="_blank" rel="noopener noreferrer">
+                            <Gift color='black' size={18} className="mr-2 transition-colors" />
+                            Paypal
+                            <Gift size={18} className="mr-2 transition-colors" />
+                            </a>
+                        </Button>
+                        <IbanDisplayComponent />
+                        </>
+                     : totalAmount > 0 ? <button
+                     onClick={() => setShowDonationLinks(true)}
+                     disabled={!totalAmount}
+                     className="mt-3 w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold py-4 px-6 rounded-xl hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                     >
+                     <div className="flex items-center justify-center">
+                         <Euro className="w-5 h-5 mr-2" />
+                         {totalAmount ? 
+                         `Contribuir €${totalAmount}` : 
+                         'Seleciona um valor'
+                         }
+                     </div>
+                 </button>
+                    : null}
+                    
                 </div>
 
                 {/* Display Panel */}
                 {totalAmount > 0 && (
                     <div className="flex-1 flex flex-col items-center gap-5">
                     {/* T-Shirt Display with Real Image */}
-                    <div className="text-center w-full max-w-[200px] sm:max-w-[240px] mx-auto"> {/* Control max width of T-shirt display */}
+                    <div className="text-center w-full max-w-[270px] sm:max-w-[270px] mx-auto"> {/* Control max width of T-shirt display */}
                         <div className="relative w-full"> {/* Parent for positioning, takes full width of its constrained parent */}
                             <img
                                 src={isFrontTshirt ? tshirtImageUrl : backTshirtUrl}
@@ -171,7 +523,7 @@ const DonationComponent = ({
                             {totalAmount > 0 && !isFrontTshirt ? (
                                 <>
                                 <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                    <span className="text-3xl sm:text-4xl font-bold text-primary p-2 rounded-md whitespace-nowrap">
+                                    <span className="text-4xl font-bold text-primary p-2 rounded-md whitespace-nowrap">
                                         {totalAmount}
                                     </span>
                                 </div>
@@ -198,7 +550,7 @@ const DonationComponent = ({
                                         </button>
                                     </div>
                                 </div>
-                                <div onClick={() => {setTotalAmount(totalAmount -1); setActiveDescription({title: '', text: ''})}} className="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div onClick={() => {setTotalAmount(totalAmount -1); setActiveDescription({title: '', text: ''})}} className="absolute bottom-0 left-1/4 transform -translate-x-1/2 -translate-y-1/2">
                                     <div className="flex-1">
                                         <button
                                             className={clsx(
@@ -206,7 +558,25 @@ const DonationComponent = ({
                                             )}
                                         >
                                             <div className="relative before:absolute before:-inset-2.5 before:rounded-full before:transition-[background-color] before:group-hover:bg-sporting/30">
-                                                <RewindIcon
+                                                <MinusIcon
+                                                    color='green'
+                                                    absoluteStrokeWidth
+                                                    className={'~size-4/5 group-active:spring-duration-[25] spring-bounce-[65] spring-duration-300 transition-transform group-active:scale-[80%]'
+                                                    }
+                                                />
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div onClick={() => {setTotalAmount(totalAmount -2); setActiveDescription({title: '', text: ''})}} className="absolute bottom-0 left-3/4 transform -translate-x-1/2 -translate-y-1/2">
+                                    <div className="flex-1">
+                                        <button
+                                            className={clsx(
+                                                'group flex items-center gap-1.5 pr-1.5 transition-[color]',
+                                            )}
+                                        >
+                                            <div className="relative before:absolute before:-inset-2.5 before:rounded-full before:transition-[background-color] before:group-hover:bg-sporting/30">
+                                                <PlusIcon
                                                     color='green'
                                                     absoluteStrokeWidth
                                                     className={'~size-4/5 group-active:spring-duration-[25] spring-bounce-[65] spring-duration-300 transition-transform group-active:scale-[80%]'

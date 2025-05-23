@@ -4,6 +4,7 @@ import { Play, RotateCcw, X, Eye, Share2, Clock, Users } from 'lucide-react'; //
 import { supabase } from '@/lib/supabaseClient'; // Importar o cliente Supabase
 import AdThankYouSection from '@/components/AdThankYouSection'
 import Header from '@/components/Header';
+import { v4 as uuidv4 } from 'uuid';
 import HourlyViewsBarChart from "@/components/HourlyViewsBarChart"
 import AnimatedScorePlacard from '@/components/AnimatedScorePlacard';
 import HelpInteraction from "@/components/HelpInteraction"
@@ -12,6 +13,7 @@ import DonationComponent from '@/components/DonationComponent';
 import Activity from '@/components/Activity';
 // Identificador único para o seu vídeo na tabela do Supabase
 const VIDEO_IDENTIFIER = 'boladobicampeao'; // Mude se necessário
+const LOCAL_STORAGE_SESSION_KEY = 'anonymousLikeSessionId';
 
 interface ShareData {
   title?: string;
@@ -114,24 +116,6 @@ const SimpleHeader = () => (
 
 const SimpleFooter = () => (
   <footer className="p-4 text-center text-sm text-muted-foreground">
-    <div className="bg-gray-50 p-4 mb-2">
-        <div className="flex items-center justify-center text-sm text-gray-600">
-          <Users className="w-4 h-4 mr-2" />
-          <span>34 sportinguistas já contribuíram</span>
-        </div>
-        <div className="text-center mt-2">
-          <div className="flex justify-center -space-x-2">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="w-8 h-8 bg-green-100 rounded-full border-2 border-white flex items-center justify-center text-xs">
-                🦁
-              </div>
-            ))}
-          </div>
-          {/* <p className="text-xs text-gray-500 mt-2">
-            "Força Sporting! Todos juntos por este sonho!" - João M.
-          </p> */}
-        </div>
-      </div>
     <p>© {new Date().getFullYear()} Sporting Campeão. Todos os direitos reservados.</p>
     <a href="/politica-de-privacidade" className="hover:underline">Política de Privacidade</a>
   </footer>
@@ -139,7 +123,7 @@ const SimpleFooter = () => (
 
 const OLDAdThankYouSection = ({ onWatchAgain, onClose }) => {
   return (
-    <div className="mt-8 p-6 bg-card rounded-lg shadow-lg text-center w-full max-w-2xl mx-auto">
+    <div className="mt-8 p-6 bg-card rounded-lg shadow-lg text-center w-full max-w-3xl mx-auto">
       <h2 className="text-2xl font-bold text-primary mb-4">Obrigado por Assistir!</h2>
       <p className="text-muted-foreground mb-6">
         [PLACEHOLDER: Mensagem de agradecimento personalizada...]
@@ -167,9 +151,15 @@ export default function HomePage() {
   const [isVideoFinished, setIsVideoFinished] = useState(false);
   const [viewCount, setViewCount] = useState(0); // Estado para a contagem de visualizações
   const [likeCount, setLikeCount] = useState(0);
-  const [userHasLiked, setUserHasLiked] = useState(false);
+  const [sessionHasLiked, setSessionHasLiked] = useState(false);
+  const [anonymousSessionId, setAnonymousSessionId] = useState(null);
+  const [isLoadingLikes, setIsLoadingLikes] = useState(true);
   const [isLoadingCount, setIsLoadingCount] = useState(true);
-  const videoContainerRef = useRef(null);
+  const [isLiking, setIsLiking] = useState(false); // To disable button during action
+  // Ref to prevent multiple rapid calls if needed, though server handles uniqueness
+  const likeActionInProgress = useRef(false)
+
+const videoContainerRef = useRef(null);
   const videoRef = useRef(null);
   const hasIncrementedViewThisSession = useRef(false);
   const [adContent, setAdContent] = useState(null); // ou useState(<p>Anúncio Simulado!</p>);
@@ -180,26 +170,38 @@ export default function HomePage() {
   const currentAmount = 47; // Simulado
   const percentage = Math.round((currentAmount / totalGoal) * 100);
 
+  // Get or generate anonymous session ID
   useEffect(() => {
-    // Simular dados horários para demonstração
-    // Numa app real, isto viria do Supabase (tabela agregada)
-    const now = new Date();
-    const data = [];
-    for (let i = 5; i >= 0; i--) { // Últimas 6 horas
-      const hour = new Date(now);
-      hour.setHours(now.getHours() - i, 0, 0, 0);
-      data.push({
-        hour: hour.toISOString(),
-        viewsInHour: Math.floor(Math.random() * 50) + (i === 0 ? viewCount % 50 : 10), // Simular dados
-      });
+    let sessionId = localStorage.getItem(LOCAL_STORAGE_SESSION_KEY);
+    if (!sessionId) {
+      sessionId = uuidv4();
+      localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, sessionId);
     }
-    setSimulatedHourlyData(data);
-  }, [viewCount]); // Recalcular simulação quando viewCount muda (apenas para demo)
+    setAnonymousSessionId(sessionId);
+  }, []);
+
+  // useEffect(() => {
+  //   // Simular dados horários para demonstração
+  //   // Numa app real, isto viria do Supabase (tabela agregada)
+  //   const now = new Date();
+  //   const data = [];
+  //   for (let i = 5; i >= 0; i--) { // Últimas 6 horas
+  //     const hour = new Date(now);
+  //     hour.setHours(now.getHours() - i, 0, 0, 0);
+  //     data.push({
+  //       hour: hour.toISOString(),
+  //       viewsInHour: Math.floor(Math.random() * 50) + (i === 0 ? viewCount % 50 : 10), // Simular dados
+  //     });
+  //   }
+  //   setSimulatedHourlyData(data);
+  // }, [viewCount]); // Recalcular simulação quando viewCount muda (apenas para demo)
 
   // Função para buscar a contagem inicial e configurar o real-time
   useEffect(() => {
-    const fetchAndSubscribeToCounts = async () => {
+    if (!anonymousSessionId) return;
+    const fetchInitialDataAndSubscribe = async () => {
       setIsLoadingCount(true);
+      setIsLoadingLikes(true);
       // Buscar contagem inicial
       const { data: viewData, error: viewError } = await supabase
         .from('video_views')
@@ -236,8 +238,23 @@ export default function HomePage() {
       } else {
         setLikeCount(initialLikeCount || 0);
       }
-      setUserHasLiked(false)
+      setSessionHasLiked(false)
       setIsLoadingCount(false);
+
+      // Check if this session has liked
+      const { data: sessionLikeData, error: sessionLikeError } = await supabase
+        .from('video_likes')
+        .select('id')
+        .eq('video_identifier', VIDEO_IDENTIFIER)
+        .eq('anonymous_session_id', anonymousSessionId)
+        .maybeSingle();
+
+      if (sessionLikeError) {
+        console.error('Error checking session like:', sessionLikeError);
+      } else {
+        setSessionHasLiked(!!sessionLikeData);
+      }
+      setIsLoadingLikes(false);
 
       // Configurar subscrição real-time
       const viewChannel = supabase
@@ -292,13 +309,13 @@ export default function HomePage() {
           }
 
           // Check if the event affects the current user's like status
-          // if (currentUserId) {
-          //     if (payload.eventType === 'INSERT' && payload.new.user_id === currentUserId) {
-          //         setUserHasLiked(true);
-          //     } else if (payload.eventType === 'DELETE' && payload.old.user_id === currentUserId) {
-          //         setUserHasLiked(false);
-          //     }
-          // }
+          if (anonymousSessionId) {
+            if (payload.eventType === 'INSERT' && payload.new.anonymous_session_id === anonymousSessionId) {
+              setSessionHasLiked(true);
+            } else if (payload.eventType === 'DELETE' && payload.old.anonymous_session_id === anonymousSessionId) {
+              setSessionHasLiked(false);
+            }
+          }
         }
       )
       .subscribe((status, err) => {
@@ -317,8 +334,87 @@ export default function HomePage() {
       };
     };
 
-    fetchAndSubscribeToCounts();
-  }, []); // Executa apenas uma vez
+    fetchInitialDataAndSubscribe();
+  }, [anonymousSessionId]); // Executa apenas uma vez
+
+  /**
+   * Handles the "Like" action by invoking the 'anonymous-like-video' Edge Function.
+   */
+  const handleLikeVideo = async () => {
+    if (!anonymousSessionId || likeActionInProgress.current || sessionHasLiked) {
+      // If no session ID, action already in progress, or already liked by this session, do nothing.
+      if (sessionHasLiked) console.log("Session already liked this video.");
+      return;
+    }
+
+    likeActionInProgress.current = true;
+    setIsLiking(true); // For UI feedback (e.g., disable button)
+
+    try {
+      const { data, error } = await supabase.functions.invoke('like-unlike-video', {
+        body: {
+          action: 'like',
+          video_identifier: VIDEO_IDENTIFIER,
+          anonymous_session_id: anonymousSessionId,
+        },
+      });
+
+      if (error) {
+        console.error('Error invoking anonymous-like-video Edge Function:', error);
+        // Handle specific errors from the function if needed
+        // e.g., if (error.context?.status === 400) alert("Bad request to like function.");
+      } else {
+        console.log('anonymous-like-video function invoked successfully:', data);
+        // Real-time subscription should update sessionHasLiked and likeCount.
+        // If the function explicitly returns `data.liked: true` (meaning it was already liked),
+        // you can ensure UI consistency here, though real-time should handle it.
+        if (data && data.liked) {
+           setSessionHasLiked(true);
+        }
+      }
+    } catch (catchError) {
+      console.error('Unexpected error invoking anonymous-like-video Edge Function:', catchError);
+    } finally {
+      likeActionInProgress.current = false;
+      setIsLiking(false);
+    }
+  };
+
+  /**
+   * Handles the "Unlike" action by invoking the 'anonymous-unlike-video' Edge Function.
+   */
+  const handleUnlikeVideo = async () => {
+    if (!anonymousSessionId || likeActionInProgress.current || !sessionHasLiked) {
+      // If no session ID, action in progress, or not currently liked by this session, do nothing.
+      if(!sessionHasLiked) console.log("Session hasn't liked this video to unlike.");
+      return;
+    }
+
+    likeActionInProgress.current = true;
+    setIsLiking(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('like-unlike-video', {
+        body: {
+          action: 'unlike',
+          video_identifier: VIDEO_IDENTIFIER,
+          anonymous_session_id: anonymousSessionId,
+        },
+      });
+
+      if (error) {
+        console.error('Error invoking anonymous-unlike-video Edge Function:', error);
+      } else {
+        console.log('anonymous-unlike-video function invoked successfully:', data);
+        // Real-time subscription should update sessionHasLiked and likeCount.
+      }
+    } catch (catchError) {
+      console.error('Unexpected error invoking anonymous-unlike-video Edge Function:', catchError);
+    } finally {
+      likeActionInProgress.current = false;
+      setIsLiking(false);
+    }
+  };
 
   const incrementViewCountViaFunction = async () => {
     // if (hasIncrementedView.current) return;
@@ -450,20 +546,19 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-background p-4">
       <Header />
-      <div className="p-6 bg-gray-50 w-96">
+      <div className="p-6 bg-gray-50 max-w-3xl">
         <div className="flex items-center mb-3">
           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
             <span className="text-2xl">🦁</span>
           </div>
           <div>
             <h3 className="font-semibold text-gray-800">A Minha História</h3>
-            <p className="text-sm text-gray-600">Sportinguista de coração</p>
+            <p className="text-sm text-gray-600">Sócio 27339, desde 2003</p>
           </div>
         </div>
         <p className="text-gray-700 text-sm leading-relaxed">
-          Sou sportinguista desde pequeno, socio desde 2003, e já tive o previlegio de acumular 10 anos de gamebox graças ao meu tio Luís e estou a ver se consigo angaria fundos para 10 de lugar de Leão junto do meu tio João. 
-          {/* Um lugar de sócio custa <strong>€2.950 por 10 anos</strong>, mas sozinho não consigo.  */}
-          {/* <span className="text-green-600 font-medium">Com a vossa ajuda,</span>, 
+        Sportinguista desde a infância, o meu tio Luís proporcionou-me o privilégio de diversas Gameboxes ao longo dos anos. Agora, procuro angariar fundos para adquirir um Lugar de Leão e desfrutá-la por uma década junto do meu padrinho!
+                {/* <span className="text-green-600 font-medium">Com a vossa ajuda,</span>, 
           longe da magia do estádio que tanto amo. */}
         </p>
       </div>
@@ -529,23 +624,38 @@ export default function HomePage() {
           </div>
         )}
 
+
+
         {isVideoFinished ?
         <>
            <AdThankYouSection
               views={viewCount}
+              likes={likeCount}
               onShare={handleShare}
               onWatchAgain={handleWatchAgain} // Passar a função correta
               onClose={handleCloseAdSection}
               onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
               adSlotContent={adContent} // Passar o conteúdo do anúncio
+              paypalLink='https://paypal.me/glcrp'
               revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
               sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
-              onLike={undefined} onRepost={undefined}          />
+              onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
+            />
           {/* <HelpInteraction /> */}
 
         </>
          : null}
       </main>
+
+      <Activity
+        likes={likeCount}
+        reposts={0}
+        views={viewCount}
+        liked={false}
+        reposted={false}
+        onShare={handleShare}
+        onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
+      />
 
       <SimpleFooter />
     </div>

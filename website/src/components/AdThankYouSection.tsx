@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, X, Gift, ShieldCheck, TriangleAlert } from 'lucide-react'; // Adicionei Gift e Shirt
+import { RotateCcw, X, Gift, ShieldCheck, TriangleAlert, Users } from 'lucide-react'; // Adicionei Gift e Shirt
 import { Link } from "react-router-dom";
 import Activity from "@/components/Activity"
 import DonationComponent from "@/components/DonationComponent"
@@ -11,13 +11,13 @@ const AdThankYouSection = ({
   onWatchAgain,
   onShare,
   onLike,
-  onRepost,
   onClose,
   onIncrementViewCount, // Função para chamar o incremento
   adSlotContent, // O conteúdo JSX do seu bloco de anúncio (ou null se não houver)
   revolutLink = "https://revolut.me/sportingcampeao", // Placeholder
   paypalLink = "https://paypal.me/glcrp",
   sportingTshirtLink = "https://lojaverde.sporting.pt/", // Placeholder
+  hasAmount = false,
 }) => {
   const hasIncremented = useRef(false);
 
@@ -45,7 +45,7 @@ const AdThankYouSection = ({
   );
 
   return (
-    <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card text-card-foreground rounded-xl shadow-xl text-center w-full max-w-2xl mx-auto">
+    <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card text-card-foreground rounded-xl shadow-xl text-center w-full max-w-3xl mx-auto">
       {/* <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">
         Ajuda um campeão a comprar o seu lugar de Leão!
       </h2> */}
@@ -62,7 +62,7 @@ const AdThankYouSection = ({
           <RotateCcw size={18} className="mr-2" />
           Bisualizar
         </Button>
-        <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
+        {/* <Button asChild variant="outline" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4">
           <a href={revolutLink} target="_blank" rel="noopener noreferrer">
             <Gift size={18} className="mr-2 transition-colors" />
             Revolut do Leão
@@ -73,10 +73,10 @@ const AdThankYouSection = ({
             <Gift color='black' size={18} className="mr-2 transition-colors" />
             Paypal
           </a>
-        </Button>
+        </Button> */}
       </div>
 
-      <Activity
+      {/* <Activity
         likes={likes}
         reposts={0}
         views={views}
@@ -84,8 +84,7 @@ const AdThankYouSection = ({
         reposted={false}
         onShare={onShare}
         onLike={onLike}
-        onRepost={onRepost}
-      />
+      /> */}
 
       {!adSlotContent && false && ( // Mostrar estas opções apenas se NÃO houver anúncio carregado
         <div className="my-6 space-y-4">

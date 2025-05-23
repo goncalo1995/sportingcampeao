@@ -12,7 +12,6 @@ type Props = JSX.IntrinsicElements['div'] & {
 	liked: boolean
 	reposted: boolean
 	onLike: () => void
-	onRepost: () => void
 	onShare: () => void
 }
 export default function Activity({
@@ -21,7 +20,6 @@ export default function Activity({
 	reposts,
 	views,
 	onLike,
-	onRepost,
     onShare,
 	liked,
 	reposted,
