@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Copy, Euro, Gift, MinusIcon, PlusIcon, Repeat, Rewind, RewindIcon, ShoppingBag } from 'lucide-react';
 import clsx from 'clsx';
-const IBAN_NUMBER = "PT50004587004032279704616";
+const IBAN_NUMBER = "";
 
 const playersByShirtNumber = {
     "1": { name: "Franco Israel", position: "Guarda-Redes", shirtNumber: "1" },
@@ -384,7 +384,7 @@ const DonationComponent = ({
                             <Gift size={18} className="mr-2 transition-colors" />
                             </a>
                         </Button>
-                        <IbanDisplayComponent />
+                        {/* <IbanDisplayComponent /> */}
                         </>
                      : totalAmount > 0 ? <button
                      onClick={() => setShowDonationLinks(true)}

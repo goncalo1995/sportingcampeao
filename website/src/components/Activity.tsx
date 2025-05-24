@@ -43,7 +43,25 @@ export default function Activity({
 					format={format}
 				/>
 			</div>
-			<div className="flex-1">
+			{/* <Share color='green' absoluteStrokeWidth className="" /> */}
+            {/* <div className="flex-1">
+				<button
+					className={clsx(
+						'group flex items-center gap-2.5 ml-8 pr-1.5 transition-[color]',
+						reposted && 'text-emerald-500'
+					)}
+					onClick={onShare}
+				>
+					<div className="relative before:absolute before:-inset-2.5 before:rounded-full before:transition-[background-color] before:group-hover:bg-emerald-500/10">
+						<Share
+                            color='green'
+							absoluteStrokeWidth
+							className="~size-4/5 group-active:spring-duration-[25] spring-bounce-50 spring-duration-300 transition-transform group-active:scale-[85%]"
+						/>
+					</div>
+				</button>
+			</div> */}
+			<div className="~size-4/5 shrink-0">
 				<button
 					className={clsx(
 						'group flex items-center gap-2.5 mx-4 pr-1.5 transition-[color]',
@@ -68,31 +86,6 @@ export default function Activity({
 						locales="en-US"
 						format={format}
 					/>
-				</button>
-			</div>
-			{/* <Share color='green' absoluteStrokeWidth className="" /> */}
-            <div className="~size-4/5 shrink-0">
-				<button
-					className={clsx(
-						'group flex items-center gap-2.5 ml-8 pr-1.5 transition-[color]',
-						reposted && 'text-emerald-500'
-					)}
-					onClick={onShare}
-				>
-					<div className="relative before:absolute before:-inset-2.5 before:rounded-full before:transition-[background-color] before:group-hover:bg-emerald-500/10">
-						<Share
-                            color='green'
-							absoluteStrokeWidth
-							className="~size-4/5 group-active:spring-duration-[25] spring-bounce-50 spring-duration-300 transition-transform group-active:scale-[85%]"
-						/>
-					</div>
-					{/* <NumberFlow
-						willChange
-						plugins={[continuous]}
-						value={reposts}
-						locales="en-US"
-						format={format}
-					/> */}
 				</button>
 			</div>
 		</div>

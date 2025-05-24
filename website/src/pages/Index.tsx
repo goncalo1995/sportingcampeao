@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw, X, Eye, Share2, Clock, Users } from 'lucide-react'; // Ícone Eye adicionado
+import { Play, RotateCcw, X, Eye, Share2, Clock, Users, Share } from 'lucide-react'; // Ícone Eye adicionado
 import { supabase } from '@/lib/supabaseClient'; // Importar o cliente Supabase
 import AdThankYouSection from '@/components/AdThankYouSection'
 import Header from '@/components/Header';
@@ -9,7 +9,7 @@ import HourlyViewsBarChart from "@/components/HourlyViewsBarChart"
 import AnimatedScorePlacard from '@/components/AnimatedScorePlacard';
 import HelpInteraction from "@/components/HelpInteraction"
 import NumberFlow, { continuous } from '@number-flow/react'
-import DonationComponent from '@/components/DonationComponent';
+import VideoDropdownMenu from '@/components/VideoDropdownMenu';
 import Activity from '@/components/Activity';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Link } from "react-router-dom";
@@ -22,6 +22,13 @@ interface ShareData {
   text?: string;
   url?: string;
 }
+
+const customVideoList = [
+  { id: 'vid1', label: 'Edit', url: 'https://cdn.sportingcampeao.pt/edit.mp4' },
+  { id: 'vid2', label: 'Short', url: 'https://cdn.sportingcampeao.pt/short.mp4' },
+  { id: 'vid3', label: 'Médio', url: 'https://example.com/highlights_2324.mp4' },
+  { id: 'vid4', label: 'Completo', url: 'https://cdn.sportingcampeao.pt/completo_low.mp4' },
+];
 
 /**
  * Handles sharing the current page or provided content.
@@ -149,6 +156,7 @@ const OLDAdThankYouSection = ({ onWatchAgain, onClose }) => {
 // --- Fim dos componentes inalterados ---
 
 export default function HomePage() {
+  const [currentVideo, setCurrentVideo] = useState(null);
   const [showVideo, setShowVideo] = useState(false);
   const [isVideoFinished, setIsVideoFinished] = useState(false);
   const [viewCount, setViewCount] = useState(0); // Estado para a contagem de visualizações
@@ -338,6 +346,17 @@ const videoContainerRef = useRef(null);
 
     fetchInitialDataAndSubscribe();
   }, [anonymousSessionId]); // Executa apenas uma vez
+
+  const handleVideoSelection = (video) => {
+        console.log('Selected video:', video);
+        setCurrentVideo(video);
+        // Here you would typically update the src of your <video> element
+        if (videoRef.current) {
+          videoRef.current.src = video.url;
+          videoRef.current.load();
+          videoRef.current.play();
+        }
+      };
 
   /**
    * Handles the "Like" action by invoking the 'anonymous-like-video' Edge Function.
@@ -572,8 +591,15 @@ const videoContainerRef = useRef(null);
       {/* <ViewCounterJar viewCount={viewCount} isLoading={isLoadingCount} /> */}
 
       <main className="flex-grow flex flex-col items-center justify-center w-full">
+      <VideoDropdownMenu
+              videos={customVideoList}
+              onVideoSelect={handleVideoSelection}
+              triggerLabel="Escolher um Vídeo"
+              selectedVideoId={currentVideo?.id}
+            />
         {!showVideo && !isVideoFinished && (
-          <div className="text-center">
+          <div className="mt-3 text-center">
+            
             {/* <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               Tricampeão? 🦁
             </h2> */}
@@ -621,14 +647,21 @@ const videoContainerRef = useRef(null);
           </div>
         )} */}
 
-        {showVideo && !isVideoFinished && (
+        {showVideo && !isVideoFinished && currentVideo && (
           <div ref={videoContainerRef} className="w-full max-w-4xl aspect-video bg-black rounded-lg shadow-2xl overflow-hidden">
+            {/* <video key={currentVideo.url}
+            width="640"
+            height="360"
+            controls
+            autoPlay src={currentVideo.url || "https://cdn.sportingcampeao.pt/bola-cut.mp4"} className="mt-2 rounded-lg"></video> */}
             <video
+              key={currentVideo.url}
               ref={videoRef}
-              src="https://cdn.sportingcampeao.pt/bola-cut.mp4"
+              src={currentVideo.url || "https://cdn.sportingcampeao.pt/bola-cut.mp4"}
               controls
               onEnded={handleVideoEnded}
               className="w-full h-full"
+              rounded-lg
             >
               O seu navegador não suporta o elemento de vídeo.
             </video>
@@ -637,8 +670,25 @@ const videoContainerRef = useRef(null);
 
 
 
-        {isVideoFinished ?
+        
+
+      <Activity
+        likes={likeCount}
+        reposts={0}
+        views={viewCount}
+        liked={sessionHasLiked}
+        reposted={false}
+        onShare={handleShare}
+        onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
+      />
+      
+      {isVideoFinished ?
         <>
+                <Button size="lg" variant='ghost' className="mt-4 bg-white hover:border border-primary/90 text-sporting">
+              <Link to="/short">
+                Versão Guarda-Redes
+              </Link>
+            </Button>
         <Button onClick={handleWatchAgain} variant="secondary" className="w-full sm:w-auto my-3">
           <RotateCcw size={18} className="mr-2" />
           Bisualizar
@@ -671,28 +721,22 @@ const videoContainerRef = useRef(null);
         </>
          : null}
 
-      <Activity
-        likes={likeCount}
-        reposts={0}
-        views={viewCount}
-        liked={sessionHasLiked}
-        reposted={false}
-        onShare={handleShare}
-        onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
-      />
-
-        <Button size="lg" variant='ghost' className="mt-4 bg-white hover:border border-primary/90 text-sporting">
-              <Link to="/short">
-                Versão Guarda-Redes
-              </Link>
-            </Button>
       </main>
 
       
 
       {/* === Section 5: Share & Follow === */}
-    <section className="text-center border-t pt-6">
-      <h3 className="text-xl font-semibold text-gray-700 mb-4">Espalha a Magia!</h3>
+    <section className="flex-1 text-center border-t pt-6">
+    <div className="mb-6 border border-border rounded-lg overflow-hidden shadow-sm bg-card">
+      <button
+        onClick={() => handleShare}
+        className="w-full flex justify-between items-center p-4 hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
+        aria-expanded={true}
+      >
+        <Share className="h-6 w-6 text-primary mr-3" />
+        <h3 className="text-xl font-semibold text-sporting text-left">Espalha a Magia!</h3> {/* Changed to h3 for semantics within page h1 */}
+      </button>
+    </div>
     </section>
 
       <SimpleFooter />
