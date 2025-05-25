@@ -35,35 +35,59 @@ const playersByShirtNumber = {
 
 // Mock data (same as before)
 const playerThankYouMessages = {
-    "1": (name) => `Obrigado pelo teu €1! Como o ${name}, és o nosso número 1! Defender este apoio é o nosso golo! 🥅🧤`,
-    "24": (name) => `€24! Grande defesa! O ${name} ficaria orgulhoso deste apoio. Mãos de ferro, coração de Leão! 🦁`,
-    "51": (name) => `€51! Uau, o jovem ${name} agradece este investimento no futuro! Brilhante! ✨`,
-    "25": (name) => `€25! Defesa imperial! Com este apoio, és o nosso ${name}, patrão da área! 💪`,
-    "26": (name) => `€26! Que muralha! O ${name} não deixaria passar nada, tal como o teu apoio! Obrigado! 🛡️`,
+    // Guarda-Redes
+    "1": (name) => `€1! Como o ${name}, defendes este apoio com unhas e dentes! Aproveitaste a oportunidade e mostraste valor! Nº1! 🥅🧤🇺🇾`, // Franco Israel
+    "24": (name) => `€24! Ruuuuuui Silva na baliza! Este apoio traz a estabilidade e a segurança de um internacional. Que defesa! 🦁🧱🇵🇹`, // Rui Silva
+    "51": (name) => `€51! Um jovem Leão como o ${name} agradece este investimento no futuro da nossa baliza! Brilhante! ✨🇵🇹`, // Diogo Pinto
+
+    // Defesas
+    "25": (name) => `€25! Patrão Inácio! Com este apoio, a nossa defesa é uma muralha. Influência e golos de um capitão! 💪🟢⚪🇵🇹`, // Gonçalo Inácio
+    //  "25": (name) => `€25! Defesa imperial! Com este apoio, és o nosso ${name}, patrão da área! 💪`,
+    "26": (name) => `€26! Diomande imperial! Este apoio é tão sólido como as tuas exibições nos grandes jogos. Afirmação total! 🛡️🇨🇮`, // Ousmane Diomande
     "6": (name) => `€6! Com a classe do ${name}, este apoio vale ouro! Obrigado pela solidez! 💎`,
+    //"6": (name) => `€6! Que classe, Debast! Chegaste para suceder e já és destaque, até no meio-campo! Obrigado pela solidez e estratégia! 💎🇧🇪`, // Zeno Debast
     "72": (name) => `€72! Incrível! O ${name} mostra garra e tu mostras um apoio tremendo! Força! 🔥`,
     "3": (name) => `€3! Rápido e eficaz como o ${name}! Este apoio chegou na hora certa! ⚡`,
-    "11": (name) => `€11! Com a magia do ${name} na ala, este apoio dá-nos asas! Obrigado, craque! 🚀`,
-    "2": (name) => `€2! Polivalente como o ${name}, este apoio vale por muitos! Obrigado! 👍`,
-    "22": (name) => `€22! Futuro craque! O ${name} agradece este sprint de generosidade! 🏃💨`,
-    "47": (name) => `€47! Experiência e dedicação! Como o capitão ${name} (no espírito!), este apoio é fundamental! Obrigado! 🟢⚪`,
-    "42": (name) => `€42! Que pulmão! O nosso ${name} do meio-campo agradece este apoio incansável! Viking! 🛡️🇩🇰`,
-    "73": (name) => `€73! Com a juventude e talento do ${name}, este apoio é um investimento no futuro! Obrigado! 🌱`,
-    "5": (name) => `€5! Samurai! Com a garra do ${name}, este apoio é uma lição de entrega! Arigato! 🎌`,
-    "23": (name) => `€23! Que classe, ${name}! Este apoio tem o toque de magia do nosso maestro! 🪄`,
-    "52": (name) => `€52! Visão de jogo! O jovem ${name} vê um futuro brilhante com este apoio! Obrigado! 🌟`,
-    "20": (name) => `€20! Golaço! O ${name} faria um golaço destes! Obrigado pelo espetáculo de apoio! ⚽️`,
-    "57": (name) => `€57! Driblador! Como o ${name}, fintaste a indiferença e marcaste um golo de solidariedade! Obrigado! 🌪️`,
-    "8": (name) => `€8! POTE de OURO! O nosso ${name} agradece este remate certeiro de generosidade! Obrigado, mágico! ✨🎯`,
-    "30": (name) => `€30! Que velocidade! O ${name} agradece este apoio que nos leva mais longe! Valeu! 💨🇧🇷`,
-    "17": (name) => `€17! TRINCA MÁGICO! Este apoio tem a classe e a finta do ${name}! Obrigado pelo espetáculo! 🪄✨`,
-    "21": (name) => `€21! Flecha africana! O ${name} voaria com este apoio! Obrigado pela energia contagiante! 🇲🇿⚡`,
-    "9": (name) => `€9! GYÖKERES! Matador! Este apoio é um golo na gaveta! Obrigado, Viking goleador! 🇸🇪⚽️💪`,
-    "19": (name) => `€19! O futuro ${name} agradece! Este apoio é um investimento num goleador! Dinamáquina! 🇩🇰💣`,
+    "2": (name) => `€2! Polivalente como o ${name}, este apoio vale por muitos! Obrigado! 👍🇧🇷`, // Matheus Reis
+    "47": (name) => `€47! Esgaio, um Leão de gema! Este apoio é de um Sportinguista de coração! 🦁💚🇵🇹`, // Ricardo Esgaio
+    "22": (name) => `€22! Futuro craque! O ${name} agradece este sprint de generosidade! 🏃💨`, // Iván Fresneda
+    
+    // Médios
+  "42": (name) => `€42! Comandante Hjulmand! Este apoio tem a liderança e a garra do nosso capitão. O farol da equipa, cobiçado por todos! 🇩🇰⚓`, // Morten Hjulmand
+  "73": (name) => `€73! Felicíssimo em campo! Da equipa B para titular, mostraste valor. Este apoio é um investimento no futuro do nosso meio-campo! 🌱🇵🇹`, // Eduardo Felicíssimo
+  "5": (name) => `€5! Samurai Morita! Apesar das lesões e viagens, a tua qualidade é indiscutível. Este apoio é pela tua entrega! Arigato! 🎌🇯🇵`, // Hidemasa Morita
+  "23": (name) => `€23! Mágico Bragança! Este apoio tem a tua classe, visão e golos. Que a recuperação te traga ainda mais forte! 🪄🇵🇹`, // Daniel Bragança
+  "52": (name) => `€52! Lágrimas de Leão, João Simões! Este apoio é pela tua garra, golo e emoção. Força na recuperação, miúdo! 🌟🇵🇹`, // João Simões
+
+    // "42": (name) => `€42! Que pulmão! O nosso ${name} do meio-campo agradece este apoio incansável! Viking! 🛡️🇩🇰`,
+    // "73": (name) => `€73! Com a juventude e talento do ${name}, este apoio é um investimento no futuro! Obrigado! 🌱`,
+    // "5": (name) => `€5! Samurai! Com a garra do ${name}, este apoio é uma lição de entrega! Arigato! 🎌`,
+    // "23": (name) => `€23! Que classe, ${name}! Este apoio tem o toque de magia do nosso maestro! 🪄`,
+    // "52": (name) => `€52! Visão de jogo! O jovem ${name} vê um futuro brilhante com este apoio! Obrigado! 🌟`,
+    
+    // Extremos e Avançados
+  "20": (name) => `€20! Maxi Araújo, dono da ala! Este apoio tem a força e os golos decisivos do nosso uruguaio. Garra pura! 🇺🇾⚡`, // Maxi Araújo
+  "57": (name) => `€57! QUENDA, a surpresa que já é certeza! Este apoio celebra o teu talento e futuro brilhante no Chelsea (mas ainda nosso por agora 😉)! Brilha, miúdo! ✨🇬🇼🇵🇹`, // Geovany Quenda
+  "8": (name) => `€8! POTE de Ouro! ${name}, a tua versatilidade e golos são magia pura, mesmo a recuperar de lesão. Este apoio é um remate certeiro! Obrigado! ✨🎯🇵🇹`, // Pedro Gonçalves
+  "30": (name) => `€30! Biel, que este apoio te inspire! Embora com poucos minutos, o talento pode surgir. Força para mostrar o teu valor! 🇧🇷💡`, // Biel (Anteriormente Marcus Edwards tinha o 8, Biel é o 30)
+    "11": (name) => `€11! Com a magia do ${name} na ala, este apoio dá-nos asas! Obrigado, craque! 🚀🇵🇹`,
+    "17": (name) => `€17! TRINCÃO MÁGICO! Este apoio celebra a tua época de afirmação, golos e assistências decisivas! Obrigado pelo espetáculo! 🪄✨🇵🇹`, // Francisco Trincão
+  "21": (name) => `€21! GENYAL Catamo! Este apoio tem a tua velocidade e os teus golos nos grandes dérbis! Voa, Leão! 🇲🇿⚡`, // Geny Catamo
+  "9": (name) => `€9! GYÖKERES! IMPARÁVEL! Este apoio é um POKER de generosidade! Obrigado pelo recorde de golos e por seres o melhor da Europa! 🇸🇪⚽️💣`, // Viktor Gyökeres
+  "19": (name) => `€19! Harder, o nosso futuro "killer"! Este apoio é para a tua adaptação e os muitos golos que vais marcar de Leão ao peito! Dinamáquina! 🇩🇰🎯`, // Conrad Harder
+
+    // "20": (name) => `€20! Golaço! O ${name} faria um golaço destes! Obrigado pelo espetáculo de apoio! ⚽️`,
+    // "57": (name) => `€57! Driblador! Como o ${name}, fintaste a indiferença e marcaste um golo de solidariedade! Obrigado! 🌪️`,
+    // "8": (name) => `€8! POTE de OURO! O nosso ${name} agradece este remate certeiro de generosidade! Obrigado, mágico! ✨🎯`,
+    // "30": (name) => `€30! Que velocidade! O ${name} agradece este apoio que nos leva mais longe! Valeu! 💨🇧🇷`,
+    // "17": (name) => `€17! TRINCA MÁGICO! Este apoio tem a classe e a finta do ${name}! Obrigado pelo espetáculo! 🪄✨`,
+    // "21": (name) => `€21! Flecha africana! O ${name} voaria com este apoio! Obrigado pela energia contagiante! 🇲🇿⚡`,
+    // "9": (name) => `€9! GYÖKERES! Matador! Este apoio é um golo na gaveta! Obrigado, Viking goleador! 🇸🇪⚽️💪`,
+    // "19": (name) => `€19! O futuro ${name} agradece! Este apoio é um investimento num goleador! Dinamáquina! 🇩🇰💣`,
     // Add more general messages for amounts not matching a player
     "generic_small": (amount) => `Obrigado pelos teus €${amount}, cada euro conta! 💚🤍`,
-    "generic_medium": (amount) => `Wow, €${amount}! Que apoio generoso! Muito obrigado! 😄`,
-    "generic_large": (amount) => `Uns impressionantes €${amount}! És uma verdadeira lenda! Muito obrigado! 🤩🦁`,
+    "generic_medium": (amount) => `Wow, €${amount}! Que apoio generoso! Muito obrigado! 😄🦁`,
+    "generic_large": (amount) => `Uns impressionantes €${amount}! És uma verdadeira lenda! Eterno obrigado! 🤩🏆`,
 };
 
 const donationOptions = [
@@ -190,7 +214,7 @@ const DonationComponent = ({
     backTshirtUrl = "https://cdn-scp.azureedge.net/lojaverdeonline/0012597_camisola-principal-cpub-2526.jpeg"
 }) => {
     const [totalAmount, setTotalAmount] = useState(0);
-    const [isFrontTshirt, setIsFronttshirt] = useState(true)
+    const [isFrontTshirt, setIsFronttshirt] = useState(false)
     const [activeDescription, setActiveDescription] = useState({ title: '', text: '' });
     const [options, setOptions] = useState([]);
     const [thankYouMessage, setThankYouMessage] = useState('');
@@ -306,7 +330,7 @@ const DonationComponent = ({
   </p>
 </div>
 
-            {activeDescription.text && (
+            {/* {activeDescription.text && (
                         <div className="p-4 rounded-lg text-left w-full border-2 border-sporting mt-4 lg:mt-0">
                             <h4 className="text-lg font-semibold text-green-700 mb-1">
                                 {formatTitle(activeDescription.title)}!
@@ -315,14 +339,8 @@ const DonationComponent = ({
                                 {activeDescription.text}
                             </p>
                         </div>
-                    )}
+                    )} */}
 
-            {/* Thank You Message Display */}
-            {thankYouMessage && (
-                <div className="my-6 p-4 border-l-4 border-sporting text-green-700 rounded-md shadow">
-                    <p className="font-semibold text-lg">{thankYouMessage}</p>
-                </div>
-            )}
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mb-8">
                 {/* Options Panel */}
@@ -377,8 +395,8 @@ const DonationComponent = ({
                             <Gift size={18} className="mr-2 transition-colors" />
                             </a>
                         </Button>
-                        <Button asChild variant="secondary" className="my-2 w-full sm:w-auto px-4 border ">
-                            <a href={`https://paypal.me/glcrp`} target="_blank" rel="noopener noreferrer">
+                        <Button asChild variant="secondary" className="my-2 mr-2 w-full sm:w-auto px-4 border ">
+                            <a href={`https://paypal.me/glcrp/${totalAmount}`} target="_blank" rel="noopener noreferrer">
                             <Gift color='black' size={18} className="mr-2 transition-colors" />
                             Paypal
                             <Gift size={18} className="mr-2 transition-colors" />
@@ -502,6 +520,12 @@ const DonationComponent = ({
                                 </div>
                             }
                         </div>
+                        {/* Thank You Message Display */}
+            {thankYouMessage && (
+                <div className="my-6 p-4 border-l-4 border-sporting text-green-700 rounded-md shadow">
+                    <p className="font-semibold text-lg">{thankYouMessage}</p>
+                </div>
+            )}
                     </div>
 
 

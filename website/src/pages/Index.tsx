@@ -24,10 +24,9 @@ interface ShareData {
 }
 
 const customVideoList = [
-  { id: 'vid1', label: 'Edit', url: 'https://cdn.sportingcampeao.pt/edit.mp4' },
-  { id: 'vid2', label: 'Short', url: 'https://cdn.sportingcampeao.pt/short.mp4' },
-  { id: 'vid3', label: 'Médio', url: 'https://example.com/highlights_2324.mp4' },
-  { id: 'vid4', label: 'Completo', url: 'https://cdn.sportingcampeao.pt/completo_low.mp4' },
+  { id: 'vid1', label: 'Edição', url: 'https://cdn.sportingcampeao.pt/editado.mp4' },
+  { id: 'vid2', label: 'Curto', url: 'https://cdn.sportingcampeao.pt/short.mp4' },
+  { id: 'vid3', label: 'Completo', url: 'https://cdn.sportingcampeao.pt/completo_new.mp4' },
 ];
 
 /**
@@ -43,7 +42,7 @@ function handleShare(customShareData?: ShareData): void {
 
   const shareData: Required<ShareData> = {
     title: customShareData?.title || pageTitle,
-    text: customShareData?.text || `Check out this page: ${pageTitle}`,
+    text: customShareData?.text || `Vamos ver${pageTitle}`,
     url: customShareData?.url || pageUrl,
   };
 
@@ -156,7 +155,7 @@ const OLDAdThankYouSection = ({ onWatchAgain, onClose }) => {
 // --- Fim dos componentes inalterados ---
 
 export default function HomePage() {
-  const [currentVideo, setCurrentVideo] = useState(null);
+  const [currentVideo, setCurrentVideo] = useState(customVideoList[0]);
   const [showVideo, setShowVideo] = useState(false);
   const [isVideoFinished, setIsVideoFinished] = useState(false);
   const [viewCount, setViewCount] = useState(0); // Estado para a contagem de visualizações
@@ -591,13 +590,53 @@ const videoContainerRef = useRef(null);
       {/* <ViewCounterJar viewCount={viewCount} isLoading={isLoadingCount} /> */}
 
       <main className="flex-grow flex flex-col items-center justify-center w-full">
+      {isVideoFinished ?
+        <>
+          {/* <Button size="lg" variant='ghost' className="mt-4 bg-white hover:border border-primary/90 text-sporting">
+              <Link to="/short">
+                Versão Guarda-Redes
+              </Link>
+            </Button> */}
+        <Accordion type="single" collapsible className="w-full max-w-2xl mb-3">
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="flex w-full items-center justify-between rounded-md bg-sporting/10 px-4 py-3 text-left text-md font-medium text-sporting hover:bg-sporting/20 focus:outline-none focus-visible:ring focus-visible:ring-sporting focus-visible:ring-opacity-75 transition-colors group">
+            Saber mais sobre como apoiar
+          </AccordionTrigger>
+          <AccordionContent className="pt-2 text-gray-600 pb-0">
+            <AdThankYouSection
+                views={viewCount}
+                likes={likeCount}
+                onShare={handleShare}
+                onWatchAgain={handleWatchAgain} // Passar a função correta
+                onClose={handleCloseAdSection}
+                onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
+                adSlotContent={adContent} // Passar o conteúdo do anúncio
+                paypalLink='https://paypal.me/glcrp'
+                revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
+                sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
+                onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
+              />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
       <VideoDropdownMenu
               videos={customVideoList}
               onVideoSelect={handleVideoSelection}
               triggerLabel="Escolher um Vídeo"
               selectedVideoId={currentVideo?.id}
             />
-        {!showVideo && !isVideoFinished && (
+      <Button onClick={handleWatchAgain} variant="secondary" className="w-full sm:w-auto my-3">
+          <RotateCcw size={18} className="mr-2" />
+          Bisualizar
+        </Button>
+      
+          {/* <HelpInteraction /> */}
+
+        </>
+         : null}
+         
+        {!showVideo && !isVideoFinished && currentVideo  && (
           <div className="mt-3 text-center">
             
             {/* <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
@@ -657,7 +696,7 @@ const videoContainerRef = useRef(null);
             <video
               key={currentVideo.url}
               ref={videoRef}
-              src={currentVideo.url || "https://cdn.sportingcampeao.pt/bola-cut.mp4"}
+              src={currentVideo.url}
               controls
               onEnded={handleVideoEnded}
               className="w-full h-full"
@@ -668,76 +707,34 @@ const videoContainerRef = useRef(null);
           </div>
         )}
 
-
-
-        
-
-      <Activity
-        likes={likeCount}
-        reposts={0}
-        views={viewCount}
-        liked={sessionHasLiked}
-        reposted={false}
-        onShare={handleShare}
-        onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
-      />
-      
-      {isVideoFinished ?
-        <>
-                <Button size="lg" variant='ghost' className="mt-4 bg-white hover:border border-primary/90 text-sporting">
-              <Link to="/short">
-                Versão Guarda-Redes
-              </Link>
-            </Button>
-        <Button onClick={handleWatchAgain} variant="secondary" className="w-full sm:w-auto my-3">
-          <RotateCcw size={18} className="mr-2" />
-          Bisualizar
-        </Button>
-        <Accordion type="single" collapsible className="w-full max-w-2xl">
-        <AccordionItem value="item-1">
-          <AccordionTrigger className="text-sporting hover:text-emerald-700 font-semibold">
-            Saber mais sobre como apoiar
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 text-gray-600 pb-0">
-            <AdThankYouSection
-                views={viewCount}
-                likes={likeCount}
-                onShare={handleShare}
-                onWatchAgain={handleWatchAgain} // Passar a função correta
-                onClose={handleCloseAdSection}
-                onIncrementViewCount={incrementViewCountViaFunction} // Passar a função de incremento
-                adSlotContent={adContent} // Passar o conteúdo do anúncio
-                paypalLink='https://paypal.me/glcrp'
-                revolutLink="https://revolut.me/sportingcampeao" // **Atualize este link!**
-                sportingTshirtLink="https://lojaverde.sporting.pt" // Exemplo de link mais específico
-                onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
-              />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-      
-          {/* <HelpInteraction /> */}
-
-        </>
-         : null}
-
       </main>
 
       
 
       {/* === Section 5: Share & Follow === */}
+    {isVideoFinished &&
     <section className="flex-1 text-center border-t pt-6">
-    <div className="mb-6 border border-border rounded-lg overflow-hidden shadow-sm bg-card">
-      <button
-        onClick={() => handleShare}
-        className="w-full flex justify-between items-center p-4 hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
-        aria-expanded={true}
-      >
-        <Share className="h-6 w-6 text-primary mr-3" />
-        <h3 className="text-xl font-semibold text-sporting text-left">Espalha a Magia!</h3> {/* Changed to h3 for semantics within page h1 */}
-      </button>
-    </div>
-    </section>
+      <Activity
+          likes={likeCount}
+          reposts={0}
+          views={viewCount}
+          liked={sessionHasLiked}
+          reposted={false}
+          onShare={handleShare}
+          onLike={sessionHasLiked ? handleUnlikeVideo : handleLikeVideo}
+        />
+      <div className="mb-6 border border-border rounded-lg overflow-hidden shadow-sm bg-card">
+        <button
+          onClick={() => handleShare()}
+          className="w-full flex justify-between items-center p-4 hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
+          aria-expanded={true}
+        >
+          <Share className="h-6 w-6 text-primary mr-3" />
+          <h3 className="text-xl font-semibold text-sporting text-left">Espalha a Magia!</h3> {/* Changed to h3 for semantics within page h1 */}
+        </button>
+      </div>
+      </section>
+      }
 
       <SimpleFooter />
     </div>
